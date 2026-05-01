@@ -1,0 +1,21 @@
+# macOS
+.DS_Store
+
+# private local notes / scratch files
+*.local
+*.bak
+*.tmp
+
+# common secret-ish files; add intentionally with care only
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa*
+id_ed25519*
+*.kdbx
+
+# chezmoi private data, if you create any manually
+.private/

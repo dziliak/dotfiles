@@ -82,7 +82,7 @@ exec-on-workspace-change = [
     # External monitors keep SketchyBar-sized top gap.
     # Built-in MacBook display uses smaller/no top gap to avoid doubled inset.
     outer.top = [
-        { monitor."built-in" = 8 },
+        { monitor."built-in" = 5 },
         34
     ]
 

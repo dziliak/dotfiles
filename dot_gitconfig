@@ -1,0 +1,19 @@
+[user]
+	email = 138145542+Sionwage@users.noreply.github.com
+	name = David Ziliak
+[init]
+	defaultBranch = main
+[core]
+	pager = difft
+[delta]
+	side-by-side = true
+	line-numbers = true
+	syntax-theme = Monokai Extended
+[diff]
+	colorMoved = default
+	algorithm = histogram
+	mnemonicPrefix = true
+	external = difft
+[difftastic]
+	display = side-by-side
+	color = always

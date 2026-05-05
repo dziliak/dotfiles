@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# ---- Configuration ----
+BORG_PASSFILE="$HOME/.borg-pass"
+
+export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
+
+# ---- Sanity checks ----
+if [[ ! -f "$BORG_PASSFILE" ]]; then
+  echo "ERROR: Borg passphrase file not found at $BORG_PASSFILE" >&2
+  exit 1
+fi
+
+# Ensure correct permissions
+chmod 600 "$BORG_PASSFILE"
+
+# ---- Load passphrase ----
+export BORG_PASSPHRASE="$(<"$BORG_PASSFILE")"
+
+if [[ -z "$BORG_PASSPHRASE" ]]; then
+  echo "ERROR: Borg passphrase is empty" >&2
+  exit 1
+fi
+
+# ensure only one backup runs at a time
+
+LOCKDIR="$HOME/.borg-backup.lock"
+
+if ! mkdir "$LOCKDIR" 2>/dev/null; then
+  exit 0
+fi
+trap 'rmdir "$LOCKDIR"' EXIT
+
+# ---- Run borgmatic ----
+echo "Starting borgmatic backup at $(date)"
+
+borgmatic
+
+rclone sync -P --checksum --retries 3 /Users/dziliak/borg-repo "onedrive:Borg Backups/MacBook Pro/"
+
+echo "Backup completed successfully at $(date)"
+
+terminal-notifier -title "Borgmatic" -message "Backup completed successfully" -sound default

@@ -1,0 +1,21 @@
+#!/bin/bash
+
+SOURCE="$HOME/borg-repo"
+DEST="/Volumes/Untitled/Borg Backups/Work Laptop - MacBook Pro"
+LOG="$HOME/.scripts/usb-backup-rclone-backup.log"
+
+echo "Backup started: $(date)" >>"$LOG"
+
+rclone sync "$SOURCE" "$DEST" \
+  --progress \
+  --delete-during \
+  --transfers 8 \
+  --checkers 8 \
+  --log-file="$LOG" \
+  --log-level INFO
+
+echo "Backup finished: $(date)" >>"$LOG"
+
+echo "Copying other files directly to NVME."
+
+# copy keepass file

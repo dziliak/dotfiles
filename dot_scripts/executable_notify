@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+DEFAULT_TITLE="Terminal"
+
+if [[ $# -eq 1 ]]; then
+  title="$DEFAULT_TITLE"
+  body="$1"
+elif [[ $# -eq 2 ]]; then
+  title="$1"
+  body="$2"
+else
+  echo "Usage:"
+  echo "  notify \"message\""
+  echo "  notify \"title\" \"message\""
+  exit 1
+fi
+
+terminal-notifier \
+  -title "$title" \
+  -message "$body" \
+  -sound Purr

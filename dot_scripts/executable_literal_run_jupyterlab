@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+PORT=8888
+
+if lsof -nP -iTCP:"$PORT" -sTCP:LISTEN >/dev/null 2>&1; then
+  echo "JupyterLab already running on port $PORT"
+  exit 0
+fi
+
+cd "$HOME/Documents/Python Venv/jupyterlab_env"
+
+echo "PWD: $PWD"
+echo "uv: $(command -v uv || echo NOT_FOUND)"
+
+exec uv run jupyter-lab \
+  --port="$PORT" \
+  --notebook-dir="$HOME/Documents/Python" \
+  --ServerApp.open_browser=True \
+  --ServerApp.use_redirect_file=False \
+  --ServerApp.browser="open -a Firefox %s"

@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+url="$(pbpaste | tr -d '\n')"
+
+if [[ -z "$url" ]]; then
+  echo "Clipboard is empty"
+  exit 1
+fi
+
+open "$url"

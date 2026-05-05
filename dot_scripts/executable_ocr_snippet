@@ -1,0 +1,173 @@
+#!/bin/zsh
+set -euo pipefail
+
+TMP_DIR="$(mktemp -d -t ocrclip)"
+TMP_IMAGE="$TMP_DIR/snippet.png"
+TMP_SWIFT="$TMP_DIR/ocr.swift"
+TMP_TXT="$TMP_DIR/ocr.txt"
+
+cleanup() {
+  rm -rf "$TMP_DIR"
+}
+trap cleanup EXIT
+
+# Interactive snip
+if ! /usr/sbin/screencapture -i "$TMP_IMAGE"; then
+  exit 0
+fi
+
+[[ -s "$TMP_IMAGE" ]] || exit 0
+
+cat > "$TMP_SWIFT" <<'SWIFT'
+import Foundation
+import Vision
+import AppKit
+
+let path = CommandLine.arguments[1]
+let url = URL(fileURLWithPath: path)
+
+guard
+    let image = NSImage(contentsOf: url),
+    let tiff = image.tiffRepresentation,
+    let bitmap = NSBitmapImageRep(data: tiff),
+    let cgImage = bitmap.cgImage
+else {
+    fputs("Failed to load image.\n", stderr)
+    exit(2)
+}
+
+let request = VNRecognizeTextRequest()
+request.recognitionLevel = .accurate
+request.usesLanguageCorrection = true
+request.minimumTextHeight = 0.0
+
+let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
+
+do {
+    try handler.perform([request])
+
+    let observations = request.results as? [VNRecognizedTextObservation] ?? []
+    let text = observations
+        .compactMap { $0.topCandidates(1).first?.string }
+        .joined(separator: "\n")
+
+    print(text, terminator: "")
+} catch {
+    fputs("OCR failed: \(error)\n", stderr)
+    exit(3)
+}
+SWIFT
+
+OCR_TEXT="$(/usr/bin/swift "$TMP_SWIFT" "$TMP_IMAGE" 2>/dev/null || true)"
+printf "%s" "$OCR_TEXT" > "$TMP_TXT"
+
+CLEANED_TEXT="$(
+/usr/bin/python3 - <<'PY' "$TMP_TXT"
+import re
+import sys
+from pathlib import Path
+
+path = Path(sys.argv[1])
+text = path.read_text(encoding="utf-8", errors="ignore")
+
+text = text.replace("\r\n", "\n").replace("\r", "\n")
+text = text.replace("\u00a0", " ")
+text = text.replace("\t", " ")
+
+replacements = {
+    "“": '"',
+    "”": '"',
+    "„": '"',
+    "‟": '"',
+    "‘": "'",
+    "’": "'",
+    "‚": "'",
+    "‛": "'",
+    "—": "-",
+    "–": "-",
+    "…": "...",
+    "•": "- ",
+    "·": "- ",
+    "●": "- ",
+}
+for old, new in replacements.items():
+    text = text.replace(old, new)
+
+text = re.sub(r"[\u200b-\u200f\u2060\ufeff]", "", text)
+text = re.sub(r"[^\S\n]+", " ", text)
+
+lines = [line.strip() for line in text.split("\n")]
+
+def is_list_line(line: str) -> bool:
+    return bool(re.match(r"^(\s*[-*+]\s+|\s*\d+[.)]\s+|\s*>+\s+)", line))
+
+def is_headingish(line: str) -> bool:
+    if not line:
+        return False
+    if len(line) <= 80 and line.endswith(":"):
+        return True
+    if len(line) <= 80 and re.fullmatch(r"[A-Z0-9 /&()'\-.,]+", line):
+        return True
+    return False
+
+def should_force_break(prev: str, curr: str) -> bool:
+    if not prev or not curr:
+        return True
+    if is_list_line(curr) or is_list_line(prev):
+        return True
+    if is_headingish(curr):
+        return True
+    return False
+
+collapsed = []
+blank = False
+for line in lines:
+    if line == "":
+        if not blank:
+            collapsed.append("")
+        blank = True
+    else:
+        collapsed.append(line)
+        blank = False
+
+paragraphs = []
+current = []
+
+for line in collapsed:
+    if line == "":
+        if current:
+            paragraphs.append(" ".join(current))
+            current = []
+        continue
+
+    if current and should_force_break(current[-1], line):
+        paragraphs.append(" ".join(current))
+        current = [line]
+    else:
+        current.append(line)
+
+if current:
+    paragraphs.append(" ".join(current))
+
+text = "\n\n".join(paragraphs)
+
+text = re.sub(r"(?<=\w)-\s+(?=\w)", "", text)
+text = re.sub(r"\s+([,.;:!?])", r"\1", text)
+text = re.sub(r"\(\s+", "(", text)
+text = re.sub(r"\s+\)", ")", text)
+text = re.sub(r"\[\s+", "[", text)
+text = re.sub(r"\s+\]", "]", text)
+text = re.sub(r"(?m)^(#{3,})\s*$", "", text)
+text = re.sub(r"\n{3,}", "\n\n", text).strip()
+
+print(text, end="")
+PY
+)"
+
+printf "%s" "$CLEANED_TEXT" | /usr/bin/pbcopy
+
+if [[ -n "$CLEANED_TEXT" ]]; then
+  /usr/bin/osascript -e 'display notification "OCR text cleaned and copied to the clipboard." with title "OCR Complete" sound name "Glass"'
+else
+  /usr/bin/osascript -e 'display notification "No text was recognized." with title "OCR Complete" sound name "Glass"'
+fi

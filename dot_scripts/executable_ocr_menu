@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+PROJECT_DIR="${HOME}/Documents/Python/macos-ocr-tool"
+
+notify() {
+  /usr/bin/osascript -e "display notification \"${1//\"/\\\"}\" with title \"OCR\""
+}
+
+have_choose() { command -v choose >/dev/null 2>&1; }
+
+pick_action() {
+  local options=(
+    "Screenshot window → clipboard"
+    "Screenshot snip → clipboard"
+    "OCR clipboard image → text"
+    "OCR clipping (snip → OCR → text on clipboard)"
+    "Cancel"
+  )
+
+  if have_choose; then
+    printf "%s\n" "${options[@]}" | choose
+  else
+    /usr/bin/osascript <<'OSA'
+      set options to {"Screenshot window → clipboard", "Screenshot snip → clipboard", "OCR clipboard image → text", "OCR clipping (snip → OCR → text on clipboard)", "Cancel"}
+      set choice to choose from list options with title "OCR Menu" with prompt "Choose an action:"
+      if choice is false then
+        return "Cancel"
+      else
+        return item 1 of choice
+      end if
+OSA
+  fi
+}
+
+do_window() {
+  /usr/sbin/screencapture -c -i -w
+  notify "Window screenshot copied to clipboard."
+}
+
+do_snip() {
+  /usr/sbin/screencapture -c -i
+  notify "Screenshot snip copied to clipboard."
+}
+
+do_ocr_clipboard() {
+  local out
+  if out="$(cd "$PROJECT_DIR" && uv run python ocr_clipboard.py)"; then
+    notify "OCR complete. Text copied to clipboard."
+    printf "%s\n" "$out"
+  else
+    notify "OCR failed (run from Terminal to see errors)."
+    exit 1
+  fi
+}
+
+do_ocr_clipping() {
+  /usr/sbin/screencapture -c -i
+  do_ocr_clipboard
+}
+
+main() {
+  local choice
+  choice="$(pick_action || true)"
+
+  case "$choice" in
+  "Screenshot window → clipboard") do_window ;;
+  "Screenshot snip → clipboard") do_snip ;;
+  "OCR clipboard image → text") do_ocr_clipboard ;;
+  "OCR clipping (snip → OCR → text on clipboard)") do_ocr_clipping ;;
+  *) exit 0 ;;
+  esac
+}
+
+main

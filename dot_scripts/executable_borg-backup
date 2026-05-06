@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # ---- Configuration ----
-BORG_PASSFILE="$HOME/.borg-pass"
+BORG_PASSFILE="$HOME/.env.borg-pass"
 
 export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
 

@@ -19,4 +19,3 @@ id_ed25519*
 
 # chezmoi private data, if you create any manually
 .private/
-key.txt.age

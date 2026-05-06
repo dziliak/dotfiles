@@ -3,6 +3,7 @@ set -euo pipefail
 
 {{- if eq .chezmoi.os "darwin" }}
 
+brew update
 brew upgrade
 
 {{- end }}

@@ -1,0 +1,23 @@
+#!/bin/bash
+
+HOST_IP="${1:-127.0.0.1}"
+
+echo "🚀 Starting llama-server on ${HOST_IP}..."
+
+llama-server \
+  --model "$MODEL_ROOT/Qwen3.6-27B-UD-Q4_K_XL/Qwen3.6-27B-UD-Q4_K_XL.gguf" \
+  --alias qwen3.6-27b-code \
+  --host "$HOST_IP" \
+  --port 8080 \
+  --ctx-size 262144 \
+  --flash-attn on \
+  --gpu-layers all \
+  --batch-size 2048 \
+  --ubatch-size 512 \
+  --temp 0.3 \
+  --top-p 0.8 \
+  --top-k 20 \
+  --min-p 0.0 \
+  --repeat-penalty 1.05 \
+  --presence-penalty 0.0 \
+  --chat-template-kwargs '{"enable_thinking":false}'

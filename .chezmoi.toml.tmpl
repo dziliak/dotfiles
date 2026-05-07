@@ -1,13 +1,12 @@
-# Chezmoi Configuration
-
 encryption = "age"
+
+{{ $hostChoices := list "Home MacBook Pro" "Work MacBook Pro" "Gaming Desktop" "Surface Pro" }}
+{{ $hostType := promptChoiceOnce . "hostType" "What type of machine is this?" $hostChoices "Home MacBook Pro" }}
+
 [age]
     command = "rage"
     identity = "~/.config/chezmoi/key.txt"
     recipient = "age14ssnjc4z9raw7ggspwfxsjuvgtj05v2v6zt6favgng77er5rl9hse9ha3a"
-
-{{- $hostChoices := list "Home MacBook Pro" "Work MacBook Pro" "Gaming Desktop" "Surface Pro" -}}
-{{- $hostType := promptChoiceOnce . "hostType" "What type of machine is this?" $hostChoices "Home MacBook Pro" -}}
 
 [edit]
     command = "nvim"

@@ -1,0 +1,16 @@
+#!/bin/bash
+
+set -euo pipefail # Fail on errors, unset variables, and pipeline errors
+
+HOST_IP="${1:-127.0.0.1}"
+
+echo "🚀 Starting llama-server on ${HOST_IP}..."
+
+llama-server \
+  --model "$MODEL_ROOT/Mistral-Medium-3.5-128B-UD-Q4_K_XL/Mistral-Medium-3.5-128B-UD-Q4_K_XL-00001-of-00003.gguf" \
+  --alias "mistral-medium-3.5" \
+  --host "$HOST_IP" \
+  --port 8001 \
+  --ctx-size 32768 \
+  --temp 0.7 \
+  --chat-template-kwargs '{"reasoning_effort":"none"}'

@@ -1,5 +1,8 @@
 # Chezmoi Configuration
 
+{{- $hostChoices := list "Home MacBook Pro" "Work MacBook Pro" "Gaming Desktop" "Surface Pro" -}}
+{{- $hostType := promptChoiceOnce . "hostType" "What type of machine is this?" $hostChoices "Home MacBook Pro" -}}
+
 encryption = "age"
 [age]
     command = "rage"
@@ -9,3 +12,6 @@ encryption = "age"
 [edit]
     command = "nvim"
     args = ["-u", "/Users/dziliak/.config/nvim/init.lua"]
+
+[data]
+    hostType = {{ $hostType | quote }}

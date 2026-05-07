@@ -148,7 +148,9 @@ mksh() {
   nvim "$file"
 }
 
+{{ if eq .hostType "Home MacBook Pro" }}
 export MODEL_ROOT="$HOME/Syncthing/LLM Models/" 
+{{ end }}
 
 export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/.scripts:$PATH"

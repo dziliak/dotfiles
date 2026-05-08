@@ -22,7 +22,7 @@ hs.hotkey.bind(hyper, "W", function()
 		return
 	end
 
-	local script = "/Users/dziliak/.scripts/webreq.sh"
+	local script = "/Users/dziliak/.scripts/webreq"
 	local cmd = string.format("%q %d", script, number)
 
 	local output, status, _, rc = hs.execute(cmd, true)

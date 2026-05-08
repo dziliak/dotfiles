@@ -1,7 +1,36 @@
+local hyper = { "cmd", "alt", "ctrl" }
+
 hs.hotkey.bind({ "cmd", "alt", "ctrl" }, "W", function()
 	hs.notify.new({ title = "Hammerspoon", informativeText = "Hello World" }):send()
 end)
 
 hs.hotkey.bind({ "cmd", "alt", "ctrl" }, "E", function()
 	hs.alert.show("Hello World!")
+end)
+
+hs.hotkey.bind(hyper, "W", function()
+	local button, text = hs.dialog.textPrompt("Open WebReq", "Enter WebReq number:", "", "Open", "Cancel")
+
+	if button ~= "Open" then
+		return
+	end
+
+	local number = tonumber(text)
+
+	if number == nil then
+		hs.alert.show("Invalid number: " .. text)
+		return
+	end
+
+	local script = "/Users/dziliak/.scripts/webreq.sh"
+	local cmd = string.format("%q %d", script, number)
+
+	local output, status, _, rc = hs.execute(cmd, true)
+
+	if status then
+		hs.alert.show("Opened WebReq " .. number)
+	else
+		hs.alert.show("webreq.sh failed: " .. tostring(rc))
+		print(output)
+	end
 end)

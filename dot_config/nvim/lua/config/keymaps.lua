@@ -16,3 +16,6 @@ vim.keymap.set("n", "-", ":Oil<CR>", opts)
 -- vim.keymap.set("n", "<space>rx", "<cmd>source %<CR>")
 -- vim.keymap.set("n", "<space>r", ":.lua<CR>")
 -- vim.keymap.set("v", "<space>r", ":lua<CR>")
+
+vim.keymap.set({ "n", "x", "o" }, "s", "<Plug>(leap)")
+vim.keymap.set("n", "S", "<Plug>(leap-from-window)")

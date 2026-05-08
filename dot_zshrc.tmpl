@@ -107,6 +107,14 @@ source $ZSH/oh-my-zsh.sh
 alias AllFilesTRUE='defaults write com.apple.finder AppleShowAllFiles TRUE; killall Finder'
 alias AllFilesFALSE='defaults write com.apple.finder AppleShowAllFiles FALSE; killall Finder'
 
+# Use eza not ls
+alias ls='eza --icons --group-directories-first --hyperlink'
+alias ll='eza -lh --icons --git --group-directories-first --hyperlink'
+alias la='eza -lah --icons --git --group-directories-first --hyperlink'
+alias lt='eza --tree --icons --git --group-directories-first --hyperlink '
+
+alias ff='fastfetch -c /Users/dziliak/.config/fastfetch/config.json'
+
 # Copy current working directory (full path) to clipboard
 cpwd() {
   pwd | pbcopy
@@ -149,7 +157,7 @@ mksh() {
 }
 
 {{ if eq .hostType "Home MacBook Pro" }}
-export MODEL_ROOT="$HOME/Syncthing/LLM Models/" 
+export MODEL_ROOT="$HOME/Syncthing/LLM Models/"
 {{ end }}
 
 export PATH="$HOME/.local/bin:$PATH"

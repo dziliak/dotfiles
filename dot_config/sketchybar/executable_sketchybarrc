@@ -106,6 +106,48 @@ sketchybar --add item chevron left \
 # volume is registered. More info about the event system can be found here:
 # https://felixkratz.github.io/SketchyBar/config/events
 
+##### Calendar Dropdown #####
+
+sketchybar --add item calendar right \
+  --set calendar \
+    icon="󰃭" \
+    label="$(date '+%a %b %d')" \
+    update_freq=60 \
+    script="$PLUGIN_DIR/calendar.sh" \
+    click_script="$PLUGIN_DIR/calendar.sh toggle" \
+    popup.drawing=off \
+    popup.align=right \
+    popup.height=26 \
+    popup.y_offset=8 \
+    popup.background.drawing=on \
+    popup.background.color=0xcc1e1e2e \
+    popup.background.corner_radius=10 \
+    popup.background.border_width=1 \
+    popup.background.border_color=0xffffffff
+
+##### Calendar Popup Rows #####
+
+# Month title
+sketchybar --add item calendar.month popup.calendar \
+  --set calendar.month \
+    icon.drawing=off \
+    label="$(date '+%B %Y')" \
+    label.align=center \
+    label.font="JetBrainsMono NFM:Bold:14.0" \
+    width=165 \
+    background.drawing=off
+
+# Weekday header + up to 6 weeks
+for i in 0 1 2 3 4 5 6; do
+  sketchybar --add item calendar.row.$i popup.calendar \
+    --set calendar.row.$i \
+      icon.drawing=off \
+      label.font="JetBrainsMono NFM:Regular:13.0" \
+      label.align=center \
+      width=165 \
+      background.drawing=off
+done
+
 sketchybar --add item clock right \
   --set clock \
     update_freq=1 \

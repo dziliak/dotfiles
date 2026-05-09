@@ -1,2 +1,12 @@
 .DS_Store
 **/.DS_Store
+
+{{- if ne .chezmoi.os "darwin" }}
+run_before_00-install-homebrew.sh
+run_after_99-brew-upgrade.sh.tmpl
+dot_hammerspoon
+apple logo.png
+dot_config/aerospace
+dot_config/private_karabiner
+dot_config/sketchybar
+{{- end }}

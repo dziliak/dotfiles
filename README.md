@@ -19,7 +19,7 @@
 
 - [x] Install on desktop
 - [ ] Install on surface pro
-- [ ] Commit hyprland config to repo
+- [x] Commit hyprland config to repo
 - [ ] Template fastfetch for mac vs linux
 - [ ] Create mac installers for configs
 - [ ] Create pacman/paru installers for configs

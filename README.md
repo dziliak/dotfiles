@@ -4,6 +4,10 @@
 
 `sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply https://github.com/dziliak/dotfiles.git`
 
+## Make sure to change the git origin to SSH
+
+`git remote set-url origin git@github.com:dziliak/dotfiles.git`
+
 ## Make sure to install pre-commit
 
 1. `chezmoi cd`
@@ -13,7 +17,7 @@
 
 ## To-do List
 
-- [ ] Install on desktop
+- [x] Install on desktop
 - [ ] Install on surface pro
 - [ ] Commit hyprland config to repo
 - [ ] Template fastfetch for mac vs linux

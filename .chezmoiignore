@@ -21,4 +21,3 @@ apple logo.png
 {{- if ne .chezmoi.os "linux" }}
 
 {{- end }}
-

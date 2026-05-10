@@ -20,4 +20,7 @@ apple logo.png
 
 {{- if ne .chezmoi.os "linux" }}
 
+.config/hypr
+.config/hypr/**
+
 {{- end }}

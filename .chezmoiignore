@@ -4,9 +4,21 @@
 {{- if ne .chezmoi.os "darwin" }}
 run_before_00-install-homebrew.sh
 run_after_99-brew-upgrade.sh.tmpl
-dot_hammerspoon
+
+.hammerspoon
+.hammerspoon/**
 apple logo.png
-dot_config/aerospace
-dot_config/private_karabiner
-dot_config/sketchybar
+
+.config/aerospace
+.config/aerospace/**
+.config/karabiner
+.config/karabiner/**
+.config/sketchybar
+.config/sketchybar/**
 {{- end }}
+
+
+{{- if ne .chezmoi.os "linux" }}
+
+{{- end }}
+

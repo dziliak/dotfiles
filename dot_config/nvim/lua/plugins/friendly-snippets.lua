@@ -1,6 +1,6 @@
 return {
-	{
-		"rafamadriz/friendly-snippets",
-		enabled = false,
-	},
+  {
+    "rafamadriz/friendly-snippets",
+    enabled = true,
+  },
 }

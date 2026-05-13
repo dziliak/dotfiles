@@ -22,6 +22,8 @@ source_directories:
     - /Users/dziliak/Swift
     - /Users/dziliak/Desktop/
     - /Users/dziliak/Downloads/
+    - /Users/dziliak/.taskrc
+    - /Users/dziliak/.task/
 
 # Deprecated. Replaced by borgmatic treating Borg's "backup file not
 # found" warning as an error by default. But if

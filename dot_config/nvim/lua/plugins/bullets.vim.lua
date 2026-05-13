@@ -22,7 +22,7 @@ return {
       vim.g.bullets_checkbox_markers = " .oOX"
 
       -- Delete the final empty bullet when pressing Enter on an empty bullet
-      vim.g.bullets_delete_last_bullet_if_empty = 1
+      vim.g.bullets_delete_last_bullet_if_empty = 2
 
       -- Renumber ordered lists automatically
       vim.g.bullets_renumber_on_change = 1

@@ -34,3 +34,7 @@ hs.hotkey.bind(hyper, "W", function()
 		print(output)
 	end
 end)
+
+hs.hotkey.bind({ "cmd", "alt" }, "b", function()
+	hs.task.new("/Users/dziliak/.scripts/screensnip", nil):start()
+end)

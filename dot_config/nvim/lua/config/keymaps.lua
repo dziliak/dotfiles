@@ -30,6 +30,15 @@ vim.keymap.set("n", "<leader>oq", ":Obsidian quick_switch<CR>", opts)
 vim.keymap.set("v", "<leader>ox", ":ObsidianExtractNote", opts)
 vim.keymap.set("n", "<leader>oy", ":Obsidian yesterday<CR>", opts)
 
+if vim.g.neovide then
+  vim.g.neovide_input_macos_option_key_is_meta = "both"
+
+  vim.keymap.set("n", "<M-j>", ":m .+1<CR>==")
+  vim.keymap.set("n", "<M-k>", ":m .-2<CR>==")
+  vim.keymap.set("v", "<M-j>", ":m '>+1<CR>gv=gv")
+  vim.keymap.set("v", "<M-k>", ":m '<-2<CR>gv=gv")
+end
+
 -- Helper: build the WebReq markdown link from the clipboard URL
 local function paste_webreq_link()
   -- Get the clipboard contents (works with the system clipboard on most platforms)

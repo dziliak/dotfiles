@@ -38,3 +38,7 @@ end)
 hs.hotkey.bind({ "cmd", "alt" }, "b", function()
 	hs.task.new("/Users/dziliak/.scripts/screensnip", nil):start()
 end)
+
+hs.hotkey.bind({ "cmd", "alt" }, "g", function()
+	hs.task.new("/Users/dziliak/.scripts/ocr_snippet", nil):start()
+end)

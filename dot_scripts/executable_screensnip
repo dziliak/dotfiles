@@ -1,0 +1,4 @@
+#!/bin/zsh
+
+# Interactive screenshot selection copied to clipboard
+/usr/sbin/screencapture -i -c

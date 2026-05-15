@@ -1,3 +1,5 @@
+hs.ipc.cliInstall()
+
 local hyper = { "cmd", "alt", "ctrl" }
 
 hs.hotkey.bind({ "cmd", "alt", "ctrl" }, "W", function()

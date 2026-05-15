@@ -22,6 +22,7 @@ apple logo.png
 
 .config/hypr
 .config/hypr/**
+.config/fish/**
 .config/fish/config.fish
 
 {{- end }}

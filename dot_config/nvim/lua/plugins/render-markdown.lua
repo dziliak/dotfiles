@@ -232,7 +232,7 @@ return {
       -- Determines how icons fill the available space:
       --  inline:  underlying text is concealed resulting in a left aligned icon
       --  overlay: result is left padded with spaces to hide any additional text
-      position = "overlay",
+      -- position = "overlay",
       bullet = false,
       right_pad = 6,
       unchecked = {
@@ -304,9 +304,9 @@ return {
       },
     },
     latex = {
-      enabled = false,
+      enabled = true,
       render_modes = false,
-      converter = "latex2text",
+      converter = { "utftex", "latex2text" },
       highlight = "RenderMarkdownMath",
       position = "above",
       top_pad = 0,

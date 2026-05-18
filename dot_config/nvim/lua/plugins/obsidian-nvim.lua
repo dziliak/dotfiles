@@ -30,6 +30,9 @@ return {
       template = "Daily Template",
       workdays_only = true,
     },
+    ui = {
+      enable = false,
+    },
 
     templates = {
       folder = "Templates",
@@ -78,3 +81,5 @@ return {
     end,
   },
 }
+
+-- require('obsidian').setup({ ui = { enable = false } })

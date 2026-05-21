@@ -15,6 +15,10 @@
 3. `pre-commit install`
 4. `pre-commit run --all-files`
 
+## Adding files to be encrypted
+
+`chezmoi add --encrypt path/to/file`
+
 ## To-do List
 
 - [x] Install on desktop

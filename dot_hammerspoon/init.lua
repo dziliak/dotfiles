@@ -40,3 +40,44 @@ end)
 hs.hotkey.bind({ "cmd", "alt" }, "g", function()
 	hs.task.new("/Users/dziliak/.scripts/ocr_snippet", nil):start()
 end)
+
+local targetVolumeName = "Work_Backup"
+local scriptToRun = os.getenv("HOME") .. "/.scripts/on-nvme-mounted.sh"
+
+local function runScript()
+	hs.task
+		.new("/bin/zsh", nil, {
+			"-lc",
+			string.format("%q", scriptToRun),
+		})
+		:start()
+end
+
+local volumeWatcher = hs.fs.volume.new(function(event)
+	if event.eventType ~= "didMount" then
+		return
+	end
+
+	local name = event.volumeName
+	local path = event.volumePath
+
+	if name == targetVolumeName then
+		hs.notify
+			.new({
+				title = "NVMe mounted",
+				informativeText = path or name,
+			})
+			:send()
+
+		runScript()
+
+		hs.notify
+			.new({
+				title = "NVMe ejected",
+				informativeText = path or name,
+			})
+			:send()
+	end
+end)
+
+volumeWatcher:start()

@@ -19,6 +19,10 @@
 
 `chezmoi add --encrypt path/to/file`
 
+## Some installed apps from Homebrew need to be unquarantined
+
+`xattr -dr com.apple.quarantine /Applications/Qucs-S.app`
+
 ## To-do List
 
 - [x] Install on desktop

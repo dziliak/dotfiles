@@ -24,6 +24,8 @@ source_directories:
     - /Users/dziliak/Downloads/
     - /Users/dziliak/.taskrc
     - /Users/dziliak/.task/
+    - /Users/dziliak/.hammerspoon/
+    - /Users/dziliak/.installation_scripts/
 
 # Deprecated. Replaced by borgmatic treating Borg's "backup file not
 # found" warning as an error by default. But if

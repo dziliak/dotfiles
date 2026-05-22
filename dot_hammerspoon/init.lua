@@ -47,9 +47,8 @@ local scriptToRun = os.getenv("HOME") .. "/.scripts/on-nvme-mounted.sh"
 local function runScript()
 	hs.task
 		.new("/bin/zsh", nil, {
-			"-l",
-			"-c",
-			scriptToRun,
+			"-lc",
+			"source ~/.zshrc; " .. string.format("%q", scriptToRun),
 		})
 		:start()
 end

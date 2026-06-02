@@ -1,0 +1,35 @@
+#!/usr/bin/env zsh
+set -euo pipefail
+
+APP_NAME="AeroSpace"
+TIMEOUT=10
+
+echo "Restarting $APP_NAME..."
+
+osascript -e "tell application \"$APP_NAME\" to quit" >/dev/null 2>&1 || true
+
+# Wait for old AeroSpace process to exit
+for _ in {1..50}; do
+  if ! pgrep -x "$APP_NAME" >/dev/null 2>&1; then
+    break
+  fi
+  sleep 0.1
+done
+
+open -a "$APP_NAME"
+
+echo "Waiting for $APP_NAME to become ready..."
+
+deadline=$((SECONDS + TIMEOUT))
+
+until aerospace list-monitors >/dev/null 2>&1; do
+  if (( SECONDS >= deadline )); then
+    echo "Timed out waiting for $APP_NAME to become ready" >&2
+    exit 1
+  fi
+  sleep 0.2
+done
+
+aerospace enable on
+
+echo "$APP_NAME restarted and enabled."

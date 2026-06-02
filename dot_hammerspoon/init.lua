@@ -53,6 +53,15 @@ local function runScript()
 		:start()
 end
 
+hs.hotkey.bind({ "cmd", "alt", "ctrl" }, "Y", function()
+	hs.task
+		.new("/bin/zsh", nil, {
+			"-lc",
+			"source ~/.zshrc; " .. string.format("%q", scriptToRun),
+		})
+		:start()
+end)
+
 local volumeWatcher = hs.fs.volume.new(function(eventType, info)
 	print("volume event:", eventType, hs.inspect(info))
 

@@ -22,7 +22,7 @@ vim.keymap.set("n", "S", "<Plug>(leap-from-window)")
 
 vim.keymap.set("n", "<leader>ob", ":Obsidian backlinks<CR>", opts)
 vim.keymap.set("n", "<leader>od", ":Obsidian today<CR>", opts)
-vim.keymap.set("n", "<leader>op", ":ObsidianBridgePickCommand<CR>", opts)
+-- vim.keymap.set("n", "<leader>op", ":ObsidianBridgePickCommand<CR>", opts)
 vim.keymap.set("n", "<leader>oo", ":Obsidian<CR>", opts)
 vim.keymap.set("n", "<leader>os", ":Obsidian search<CR>", opts)
 vim.keymap.set("n", "<leader>ot", ":Obsidian tomorrow<CR>", opts)

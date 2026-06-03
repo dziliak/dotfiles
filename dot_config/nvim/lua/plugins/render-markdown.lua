@@ -234,7 +234,7 @@ return {
       --  overlay: result is left padded with spaces to hide any additional text
       -- position = "overlay",
       bullet = false,
-      right_pad = 6,
+      -- right_pad = 6,
       unchecked = {
         -- Replaces '[ ]' of 'task_list_marker_unchecked'
         icon = "󰄱 ",
@@ -268,7 +268,7 @@ return {
     bullet = {
       -- Turn on / off list bullet rendering
       enabled = true,
-      right_pad = 4,
+      -- right_pad = 4,
     },
     link = {
       enabled = true,

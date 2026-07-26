@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+# Convert dBm to watts:
+# watts = 10^((dBm - 30) / 10)
+
+if [[ $# -ne 1 ]]; then
+    echo "Usage: $(basename "$0") <dBm>" >&2
+    exit 1
+fi
+
+dbm="$1"
+
+awk -v dbm="$dbm" '
+BEGIN {
+    if (dbm !~ /^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$/) {
+        print "Error: dBm must be a number." > "/dev/stderr"
+        exit 1
+    }
+
+    watts = exp(((dbm - 30) / 10) * log(10))
+    printf "%.3f dBm = %.9g W\n", dbm, watts
+}'

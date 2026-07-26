@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+# Convert watts to dBm:
+# dBm = 10 * log10(watts * 1000)
+
+if [[ $# -ne 1 ]]; then
+    echo "Usage: $(basename "$0") <watts>" >&2
+    exit 1
+fi
+
+watts="$1"
+
+awk -v watts="$watts" '
+BEGIN {
+    if (watts !~ /^[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$/ || watts <= 0) {
+        print "Error: watts must be a positive number." > "/dev/stderr"
+        exit 1
+    }
+
+    dbm = 10 * log(watts * 1000) / log(10)
+    printf "%.3f W = %.3f dBm\n", watts, dbm
+}'

@@ -1,22 +1,26 @@
-#!/usr/bin/env bash
+#!/usr/bin/env lua
 
-# Convert watts to dBm:
-# dBm = 10 * log10(watts * 1000)
+-- Convert watts to dBm:
+-- dBm = 10 * log10(watts * 1000)
 
-if [[ $# -ne 1 ]]; then
-    echo "Usage: $(basename "$0") <watts>" >&2
-    exit 1
-fi
+local function usage()
+    io.stderr:write(
+        string.format("Usage: %s <watts>\n", arg[0] or "watts_to_dbm")
+    )
+end
 
-watts="$1"
+if #arg ~= 1 then
+    usage()
+    os.exit(1)
+end
 
-awk -v watts="$watts" '
-BEGIN {
-    if (watts !~ /^[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$/ || watts <= 0) {
-        print "Error: watts must be a positive number." > "/dev/stderr"
-        exit 1
-    }
+local watts = tonumber(arg[1])
 
-    dbm = 10 * log(watts * 1000) / log(10)
-    printf "%.3f W = %.3f dBm\n", watts, dbm
-}'
+if watts == nil or watts <= 0 then
+    io.stderr:write("Error: watts must be a positive number.\n")
+    os.exit(1)
+end
+
+local dbm = 10 * (math.log(watts * 1000) / math.log(10))
+
+print(string.format("%.9g W = %.3f dBm", watts, dbm))

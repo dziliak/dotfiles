@@ -32,3 +32,4 @@
 - [ ] Create mac installers for configs
 - [ ] Create pacman/paru installers for configs
 - [ ] Create paru update/upgrade on running chezmoi apply
+- [ ] Fix Obsidian plugin for personal laptop vs work laptop

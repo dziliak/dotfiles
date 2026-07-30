@@ -33,3 +33,4 @@
 - [ ] Create pacman/paru installers for configs
 - [ ] Create paru update/upgrade on running chezmoi apply
 - [ ] Fix Obsidian plugin for personal laptop vs work laptop
+- [ ] Add config to replace CAPS with ESC for linux distros

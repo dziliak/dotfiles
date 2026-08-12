@@ -1,0 +1,403 @@
+#!/usr/bin/env -S uv run --script
+
+# /// script
+# requires-python = ">=3.11"
+# dependencies = [
+#     "pyobjc-framework-CoreBluetooth",
+#     "pyobjc-framework-Cocoa",
+# ]
+# ///
+
+import time
+
+import objc
+from CoreBluetooth import (
+    CBCentralManager,
+    CBCentralManagerStatePoweredOn,
+    CBUUID,
+)
+from Foundation import NSDate, NSObject, NSRunLoop
+from objc import super
+
+
+BATTERY_SERVICE_UUID = "180F"
+BATTERY_LEVEL_UUID = "2A19"
+
+
+class BatteryReader(
+    NSObject,
+    protocols=[
+        objc.protocolNamed("CBCentralManagerDelegate"),
+        objc.protocolNamed("CBPeripheralDelegate"),
+    ],
+):
+    def init(self):
+        self = super().init()
+
+        if self is None:
+            return None
+
+        self.central_ready = False
+        self.central_state = None
+        self.central = None
+
+        self.expected = set()
+        self.results = {}
+        self.errors = {}
+
+        return self
+
+    def centralManagerDidUpdateState_(self, central):
+        self.central_state = central.state()
+        self.central_ready = True
+
+    def centralManager_didConnectPeripheral_(
+        self,
+        central,
+        peripheral,
+    ):
+        peripheral.setDelegate_(self)
+
+        peripheral.discoverServices_(
+            [
+                CBUUID.UUIDWithString_(
+                    BATTERY_SERVICE_UUID
+                )
+            ]
+        )
+
+    def centralManager_didFailToConnectPeripheral_error_(
+        self,
+        central,
+        peripheral,
+        error,
+    ):
+        identifier = str(
+            peripheral.identifier().UUIDString()
+        )
+
+        name = str(
+            peripheral.name() or identifier
+        )
+
+        self.errors[identifier] = (
+            f"{name}: failed to connect: "
+            f"{self._error_text(error)}"
+        )
+
+    def centralManager_didDisconnectPeripheral_error_(
+        self,
+        central,
+        peripheral,
+        error,
+    ):
+        identifier = str(
+            peripheral.identifier().UUIDString()
+        )
+
+        if (
+            identifier in self.expected
+            and identifier not in self.results
+        ):
+            name = str(
+                peripheral.name() or identifier
+            )
+
+            self.errors[identifier] = (
+                f"{name}: disconnected before battery read: "
+                f"{self._error_text(error)}"
+            )
+
+    def peripheral_didDiscoverServices_(
+        self,
+        peripheral,
+        error,
+    ):
+        identifier = str(
+            peripheral.identifier().UUIDString()
+        )
+
+        name = str(
+            peripheral.name() or identifier
+        )
+
+        if error is not None:
+            self.errors[identifier] = (
+                f"{name}: service discovery failed: "
+                f"{self._error_text(error)}"
+            )
+            return
+
+        services = peripheral.services() or []
+
+        battery_service = None
+
+        for service in services:
+            uuid = str(
+                service.UUID().UUIDString()
+            ).upper()
+
+            if uuid == BATTERY_SERVICE_UUID:
+                battery_service = service
+                break
+
+        if battery_service is None:
+            self.errors[identifier] = (
+                f"{name}: Battery Service "
+                f"{BATTERY_SERVICE_UUID} not found"
+            )
+            return
+
+        peripheral.discoverCharacteristics_forService_(
+            [
+                CBUUID.UUIDWithString_(
+                    BATTERY_LEVEL_UUID
+                )
+            ],
+            battery_service,
+        )
+
+    def peripheral_didDiscoverCharacteristicsForService_error_(
+        self,
+        peripheral,
+        service,
+        error,
+    ):
+        identifier = str(
+            peripheral.identifier().UUIDString()
+        )
+
+        name = str(
+            peripheral.name() or identifier
+        )
+
+        if error is not None:
+            self.errors[identifier] = (
+                f"{name}: characteristic discovery failed: "
+                f"{self._error_text(error)}"
+            )
+            return
+
+        characteristics = (
+            service.characteristics() or []
+        )
+
+        battery_characteristic = None
+
+        for characteristic in characteristics:
+            uuid = str(
+                characteristic.UUID().UUIDString()
+            ).upper()
+
+            if uuid == BATTERY_LEVEL_UUID:
+                battery_characteristic = characteristic
+                break
+
+        if battery_characteristic is None:
+            self.errors[identifier] = (
+                f"{name}: Battery Level characteristic "
+                f"{BATTERY_LEVEL_UUID} not found"
+            )
+            return
+
+        peripheral.readValueForCharacteristic_(
+            battery_characteristic
+        )
+
+    def peripheral_didUpdateValueForCharacteristic_error_(
+        self,
+        peripheral,
+        characteristic,
+        error,
+    ):
+        identifier = str(
+            peripheral.identifier().UUIDString()
+        )
+
+        name = str(
+            peripheral.name() or identifier
+        )
+
+        if error is not None:
+            self.errors[identifier] = (
+                f"{name}: battery read failed: "
+                f"{self._error_text(error)}"
+            )
+            return
+
+        uuid = str(
+            characteristic.UUID().UUIDString()
+        ).upper()
+
+        if uuid != BATTERY_LEVEL_UUID:
+            return
+
+        value = characteristic.value()
+
+        if value is None:
+            self.errors[identifier] = (
+                f"{name}: Battery Level returned no data"
+            )
+            return
+
+        data = bytes(value)
+
+        if not data:
+            self.errors[identifier] = (
+                f"{name}: Battery Level returned empty data"
+            )
+            return
+
+        battery = int(data[0])
+
+        self.results[identifier] = {
+            "name": name,
+            "battery": battery,
+        }
+
+    def complete(self):
+        finished = (
+            set(self.results)
+            | set(self.errors)
+        )
+
+        return self.expected.issubset(finished)
+
+    @staticmethod
+    def _error_text(error):
+        if error is None:
+            return "unknown error"
+
+        try:
+            return str(
+                error.localizedDescription()
+            )
+        except Exception:
+            return str(error)
+
+
+def pump_run_loop(seconds=0.05):
+    NSRunLoop.currentRunLoop().runUntilDate_(
+        NSDate.dateWithTimeIntervalSinceNow_(
+            seconds
+        )
+    )
+
+
+def main():
+    reader = BatteryReader.alloc().init()
+
+    central = (
+        CBCentralManager.alloc()
+        .initWithDelegate_queue_(
+            reader,
+            None,
+        )
+    )
+
+    reader.central = central
+
+    deadline = time.time() + 5.0
+
+    while (
+        not reader.central_ready
+        and time.time() < deadline
+    ):
+        pump_run_loop()
+
+    if not reader.central_ready:
+        raise SystemExit(
+            "CoreBluetooth did not initialize."
+        )
+
+    if (
+        reader.central_state
+        != CBCentralManagerStatePoweredOn
+    ):
+        raise SystemExit(
+            "Bluetooth is unavailable "
+            f"(state={reader.central_state})."
+        )
+
+    battery_uuid = CBUUID.UUIDWithString_(
+        BATTERY_SERVICE_UUID
+    )
+
+    peripherals = list(
+        central.retrieveConnectedPeripheralsWithServices_(
+            [battery_uuid]
+        )
+    )
+
+    if not peripherals:
+        raise SystemExit(
+            "No connected BLE devices expose "
+            "Battery Service 180F."
+        )
+
+    print("Connected Battery Service devices:")
+
+    for peripheral in peripherals:
+        identifier = str(
+            peripheral.identifier().UUIDString()
+        )
+
+        name = str(
+            peripheral.name() or identifier
+        )
+
+        reader.expected.add(identifier)
+
+        print(
+            f"  {name} ({identifier})"
+        )
+
+        peripheral.setDelegate_(reader)
+
+        central.connectPeripheral_options_(
+            peripheral,
+            None,
+        )
+
+    print()
+    print("Reading battery levels...")
+    print()
+
+    deadline = time.time() + 10.0
+
+    while (
+        not reader.complete()
+        and time.time() < deadline
+    ):
+        pump_run_loop()
+
+    for peripheral in peripherals:
+        identifier = str(
+            peripheral.identifier().UUIDString()
+        )
+
+        if identifier in reader.results:
+            result = reader.results[identifier]
+
+            print(
+                f"{result['name']}: "
+                f"{result['battery']}%"
+            )
+
+        elif identifier in reader.errors:
+            print(
+                reader.errors[identifier]
+            )
+
+        else:
+            name = str(
+                peripheral.name() or identifier
+            )
+
+            print(
+                f"{name}: timed out"
+            )
+
+
+if __name__ == "__main__":
+    main()

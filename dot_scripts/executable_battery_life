@@ -1,0 +1,225 @@
+#!/usr/bin/env python3
+
+import argparse
+import json
+import re
+import subprocess
+from dataclasses import asdict, dataclass
+from typing import List, Optional
+
+
+@dataclass(frozen=True)
+class BatteryDevice:
+    name: str
+    battery: Optional[int]
+    device_type: str
+    connected: bool = True
+    charging: Optional[bool] = None
+
+
+def run_command(*args: str) -> str:
+    result = subprocess.run(
+        args,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    return result.stdout
+
+
+def get_macbook_battery() -> Optional[BatteryDevice]:
+    try:
+        output = run_command("pmset", "-g", "batt")
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return None
+
+    match = re.search(r"(\d+)%", output)
+
+    if not match:
+        return None
+
+    battery = int(match.group(1))
+    lower = output.lower()
+
+    if "not charging" in lower:
+        charging = False
+    elif "charging" in lower:
+        charging = True
+    else:
+        charging = None
+
+    return BatteryDevice(
+        name="MacBook",
+        battery=battery,
+        device_type="MacBook",
+        connected=True,
+        charging=charging,
+    )
+
+
+def get_bluetooth_devices() -> List[BatteryDevice]:
+    try:
+        output = run_command(
+            "system_profiler",
+            "SPBluetoothDataType",
+        )
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return []
+
+    devices = []
+    lines = output.splitlines()
+
+    connected_index = None
+    connected_indent = None
+
+    # Locate the "Connected:" section.
+    for i, line in enumerate(lines):
+        if line.strip() == "Connected:":
+            connected_index = i
+            connected_indent = len(line) - len(line.lstrip())
+            break
+
+    if connected_index is None:
+        return []
+
+    current_name = None
+    current_battery = None
+    current_type = None
+    device_indent = None
+
+    def add_current_device():
+        if current_name is not None and current_battery is not None:
+            devices.append(
+                BatteryDevice(
+                    name=current_name,
+                    battery=current_battery,
+                    device_type=current_type or "Bluetooth",
+                    connected=True,
+                    charging=None,
+                )
+            )
+
+    for line in lines[connected_index + 1:]:
+        stripped = line.strip()
+
+        if not stripped:
+            continue
+
+        indent = len(line) - len(line.lstrip())
+
+        # We have left the Connected section.
+        if indent <= connected_indent:
+            break
+
+        # Example:
+        #
+        #       Glove80:
+        #           Address: ...
+        #
+        # The first level beneath Connected is the device name.
+        if (
+            stripped.endswith(":")
+            and ":" not in stripped[:-1]
+            and indent > connected_indent
+        ):
+            if device_indent is None:
+                device_indent = indent
+
+            if indent == device_indent:
+                add_current_device()
+
+                current_name = stripped[:-1]
+                current_battery = None
+                current_type = None
+
+                continue
+
+        if current_name is None:
+            continue
+
+        if stripped.startswith("Battery Level:"):
+            match = re.search(r"(\d+)%", stripped)
+
+            if match:
+                current_battery = int(match.group(1))
+
+        elif stripped.startswith("Minor Type:"):
+            current_type = stripped.split(":", 1)[1].strip()
+
+    # Save the final device.
+    add_current_device()
+
+    return devices
+
+
+def get_devices() -> List[BatteryDevice]:
+    devices = []
+
+    macbook = get_macbook_battery()
+
+    if macbook is not None:
+        devices.append(macbook)
+
+    devices.extend(get_bluetooth_devices())
+
+    return devices
+
+
+def output_text(devices: List[BatteryDevice]) -> None:
+    for device in devices:
+        if device.battery is None:
+            battery_text = "unknown"
+        else:
+            battery_text = "{}%".format(device.battery)
+
+        status = ""
+
+        if device.charging is True:
+            status = " charging"
+        elif device.charging is False:
+            status = " not-charging"
+
+        print(
+            "{}: {}{}".format(
+                device.name,
+                battery_text,
+                status,
+            )
+        )
+
+
+def output_json(devices: List[BatteryDevice]) -> None:
+    print(
+        json.dumps(
+            [asdict(device) for device in devices],
+            indent=2,
+        )
+    )
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        description=(
+            "List battery levels for the MacBook "
+            "and connected Bluetooth devices."
+        )
+    )
+
+    parser.add_argument(
+        "--json",
+        action="store_true",
+        help="Output results as JSON.",
+    )
+
+    args = parser.parse_args()
+
+    devices = get_devices()
+
+    if args.json:
+        output_json(devices)
+    else:
+        output_text(devices)
+
+
+if __name__ == "__main__":
+    main()

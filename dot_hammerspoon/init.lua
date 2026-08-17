@@ -92,3 +92,86 @@ local volumeWatcher = hs.fs.volume.new(function(eventType, info)
 end)
 
 -- volumeWatcher:start()
+
+-- Focus follows mouse
+focusFollowsMouse = {}
+
+local ffm = focusFollowsMouse
+
+ffm.delay = 0
+ffm.pendingWindowID = nil
+ffm.focusTimer = nil
+
+local function windowUnderMouse()
+	local mousePos = hs.geometry(hs.mouse.absolutePosition())
+
+	-- orderedWindows() returns visible windows front-to-back
+	for _, win in ipairs(hs.window.orderedWindows()) do
+		if win:isStandard() then
+			local frame = win:frame()
+
+			if mousePos:inside(frame) then
+				return win
+			end
+		end
+	end
+
+	return nil
+end
+
+local function updateFocus()
+	local targetWindow = windowUnderMouse()
+	local targetID = targetWindow and targetWindow:id() or nil
+
+	local focusedWindow = hs.window.focusedWindow()
+	local focusedID = focusedWindow and focusedWindow:id() or nil
+
+	-- Already focused
+	if targetID == focusedID then
+		ffm.pendingWindowID = nil
+
+		if ffm.focusTimer then
+			ffm.focusTimer:stop()
+			ffm.focusTimer = nil
+		end
+
+		return
+	end
+
+	-- We're already waiting to focus this window.
+	-- Don't restart the timer for every mouseMoved event.
+	if targetID == ffm.pendingWindowID then
+		return
+	end
+
+	ffm.pendingWindowID = targetID
+
+	if ffm.focusTimer then
+		ffm.focusTimer:stop()
+		ffm.focusTimer = nil
+	end
+
+	if not targetID then
+		return
+	end
+
+	ffm.focusTimer = hs.timer.doAfter(ffm.delay, function()
+		-- Make sure the pointer is still over the same window
+		local currentWindow = windowUnderMouse()
+		local currentID = currentWindow and currentWindow:id() or nil
+
+		if currentID == targetID then
+			currentWindow:focus()
+		end
+
+		ffm.pendingWindowID = nil
+		ffm.focusTimer = nil
+	end)
+end
+
+ffm.mouseWatcher = hs.eventtap.new({ hs.eventtap.event.types.mouseMoved }, function()
+	updateFocus()
+	return false
+end)
+
+ffm.mouseWatcher:start()

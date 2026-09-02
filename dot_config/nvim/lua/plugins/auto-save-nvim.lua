@@ -36,10 +36,24 @@ return {
       "help",
     }
 
+    local excluded_extensions = {
+      "ipynb",
+    }
+
     local function save_condition(buf)
       local filetype = vim.bo[buf].filetype
       local buftype = vim.bo[buf].buftype
-      local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(buf), ":t")
+      local full_filename = vim.api.nvim_buf_get_name(buf)
+      local filename = vim.fn.fnamemodify(full_filename, ":t")
+      local extension = vim.fn.fnamemodify(full_filename, ":e")
+
+      if full_filename == "" then
+        return false
+      end
+
+      if vim.tbl_contains(excluded_extensions, extension) then
+        return false
+      end
 
       if vim.tbl_contains(excluded_filetypes, filetype) then
         return false
@@ -53,11 +67,7 @@ return {
         return false
       end
 
-      if not vim.bo[buf].modifiable then
-        return false
-      end
-
-      if vim.bo[buf].readonly then
+      if not vim.bo[buf].modifiable or vim.bo[buf].readonly then
         return false
       end
 

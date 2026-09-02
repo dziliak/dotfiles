@@ -3,8 +3,6 @@
 	name = David Ziliak
 [init]
 	defaultBranch = main
-[core]
-	pager = difft
 [delta]
 	side-by-side = true
 	line-numbers = true

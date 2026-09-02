@@ -1,7 +1,21 @@
 return {
   "3rd/image.nvim",
-  build = false, -- so that it doesn't build the rock https://github.com/3rd/image.nvim/issues/91#issuecomment-2453430239
+
+  build = false,
+
+  -- Kitty graphics are available in Kitty, but not in Neovide.
+  cond = function()
+    return vim.env.KITTY_WINDOW_ID ~= nil and not vim.g.neovide
+  end,
+
   opts = {
+    backend = "kitty",
     processor = "magick_cli",
+
+    max_width_window_percentage = 80,
+    max_height_window_percentage = 45,
+
+    window_overlap_clear_enabled = true,
+    editor_only_render_when_focused = true,
   },
 }

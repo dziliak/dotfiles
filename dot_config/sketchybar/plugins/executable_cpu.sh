@@ -1,5 +1,13 @@
 #!/bin/bash
 
+if [[ "${1:-}" == click ]]; then
+  case "${MODIFIER:-}" in
+    *cmd*) exec /usr/bin/open -a "Activity Monitor" ;;
+    *shift*) exec /usr/bin/open -na kitty --args /usr/bin/sudo /opt/homebrew/bin/htop ;;
+    *) exec /usr/bin/open -na kitty --args /opt/homebrew/bin/htop ;;
+  esac
+fi
+
 source "${CONFIG_DIR:-$(cd "$(dirname "$0")/.." && pwd)}/plugins/common.sh"
 init_state cpu || exit 1
 

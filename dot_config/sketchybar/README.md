@@ -17,6 +17,14 @@ or the Xcode Command Line Tools. Other commands ship with macOS.
 
 CPU and network sample every three seconds by default; the clock keeps seconds.
 The first CPU sample after startup/wake is `…` until a second sample is available.
+CPU indicator click actions:
+- Click: open a new Kitty terminal window running `htop`.
+- Shift-click: open a new Kitty terminal window running `sudo htop`, with the
+  password prompt in the terminal when needed.
+- Command-click: open Activity Monitor (also takes priority with Shift held).
+
+Terminal actions require Kitty and `htop` installed at `/opt/homebrew/bin/htop`.
+
 Network rates use binary units (KiB/s, MiB/s, GiB/s) and track the default-route
 interface, including VPN interfaces. Reconnects, changed interfaces, counter
 resets, and long sampling gaps establish a new baseline.

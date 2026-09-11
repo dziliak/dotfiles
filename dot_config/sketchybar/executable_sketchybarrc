@@ -173,6 +173,7 @@ sketchybar --add item cpu right \
     label.width=40 \
     label.align=right \
     script="$PLUGIN_DIR/cpu.sh" \
+    click_script="$PLUGIN_DIR/cpu.sh click" \
   --subscribe cpu system_woke
 
 sketchybar --add item network right \

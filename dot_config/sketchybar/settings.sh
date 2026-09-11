@@ -1,0 +1,26 @@
+#!/bin/bash
+# Shared appearance and update intervals. Sourced by sketchybarrc and plugins.
+FONT_FAMILY="JetBrainsMono NFM"
+FONT_ICON="$FONT_FAMILY:Regular:20.0"
+FONT_LABEL="$FONT_FAMILY:Regular:15.0"
+FONT_SMALL="$FONT_FAMILY:Regular:13.0"
+FONT_TITLE="$FONT_FAMILY:Bold:14.0"
+
+COLOR_TEXT=0xffffffff
+COLOR_DARK=0xff000000
+COLOR_BAR=0x40000000
+COLOR_POPUP=0xcc1e1e2e
+COLOR_VISIBLE=0x99ffffff
+COLOR_OCCUPIED=0x40ffffff
+COLOR_INACTIVE=0x88ffffff
+COLOR_WARNING=0xffff6b6b
+COLOR_CHARGING=0xffa6e3a1
+
+# Keep these names in sync with AeroSpace's persistent-workspaces and bindings.
+WORKSPACES=(1 2 3 4 5 6 7 8 9 0)
+NETWORK_INTERVAL=3
+CPU_INTERVAL=3
+WORKSPACE_INTERVAL=30
+VOLUME_INTERVAL=30
+VOLUME_STEP=5
+LOW_BATTERY_PERCENT=20

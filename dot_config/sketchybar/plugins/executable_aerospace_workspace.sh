@@ -1,45 +1,46 @@
 #!/usr/bin/env bash
 
-FOCUSED_WS="$(aerospace list-workspaces --monitor focused --visible 2>/dev/null)"
-VISIBLE_WS="$(aerospace list-workspaces --monitor all --visible 2>/dev/null)"
-USED_WS="$(aerospace list-workspaces --monitor all --empty no 2>/dev/null)"
+source "${CONFIG_DIR:-$(cd "$(dirname "$0")/.." && pwd)}/plugins/common.sh"
+
+# Preserve the last good display if AeroSpace is restarting or unavailable.
+FOCUSED_WS="$(aerospace list-workspaces --focused 2>/dev/null)" || exit 0
+VISIBLE_WS="$(aerospace list-workspaces --monitor all --visible 2>/dev/null)" || exit 0
+USED_WS="$(aerospace list-workspaces --monitor all --empty no 2>/dev/null)" || exit 0
+[[ -n "$FOCUSED_WS" && -n "$VISIBLE_WS" ]] || exit 0
 
 args=()
 
 contains() {
-  case "$1" in
-  *$'\n'"$2"$'\n'* | "$2"$'\n'* | *$'\n'"$2" | "$2") return 0 ;;
-  *) return 1 ;;
-  esac
+  [[ $'\n'"$1"$'\n' == *$'\n'"$2"$'\n'* ]]
 }
 
-for ws in 1 2 3 4 5 6 7 8 9 0; do
+for ws in "${WORKSPACES[@]}"; do
   if contains "$VISIBLE_WS" "$ws"; then
     if [ "$ws" = "$FOCUSED_WS" ]; then
       args+=(--set "workspace.$ws"
         drawing=on
-        icon.color=0xff000000
+        icon.color="$COLOR_DARK"
         background.drawing=on
-        background.color=0xffffffff)
+        background.color="$COLOR_TEXT")
     else
       args+=(--set "workspace.$ws"
         drawing=on
-        icon.color=0xff000000
+        icon.color="$COLOR_DARK"
         background.drawing=on
-        background.color=0x99ffffff)
+        background.color="$COLOR_VISIBLE")
     fi
 
   elif contains "$USED_WS" "$ws"; then
     args+=(--set "workspace.$ws"
       drawing=on
-      icon.color=0xffffffff
+      icon.color="$COLOR_TEXT"
       background.drawing=on
-      background.color=0x40ffffff)
+      background.color="$COLOR_OCCUPIED")
 
   else
     args+=(--set "workspace.$ws"
       drawing=off
-      icon.color=0x88ffffff
+      icon.color="$COLOR_INACTIVE"
       background.drawing=off)
   fi
 done

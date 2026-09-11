@@ -1,28 +1,32 @@
-#!/bin/sh
+#!/bin/bash
 
-PERCENTAGE="$(pmset -g batt | grep -Eo "\d+%" | cut -d% -f1)"
-CHARGING="$(pmset -g batt | grep 'AC Power')"
+source "${CONFIG_DIR:-$(cd "$(dirname "$0")/.." && pwd)}/plugins/common.sh"
+STATUS="$(pmset -g batt)" || exit 1
 
-if [ "$PERCENTAGE" = "" ]; then
+if [[ "$STATUS" =~ ([0-9]{1,3})% ]]; then
+  PERCENTAGE=$((10#${BASH_REMATCH[1]}))
+  ((PERCENTAGE <= 100)) || exit 1
+else
+  sketchybar --set "$NAME" drawing=off
   exit 0
 fi
 
-case "${PERCENTAGE}" in
-  9[0-9]|100) ICON=""
-  ;;
-  [6-8][0-9]) ICON=""
-  ;;
-  [3-5][0-9]) ICON=""
-  ;;
-  [1-2][0-9]) ICON=""
-  ;;
-  *) ICON=""
+case "$PERCENTAGE" in
+  9[0-9]|100) ICON="" ;;
+  [6-8][0-9]) ICON="" ;;
+  [3-5][0-9]) ICON="" ;;
+  [1-2][0-9]) ICON="" ;;
+  *) ICON="" ;;
 esac
 
-if [[ "$CHARGING" != "" ]]; then
+COLOR="$COLOR_TEXT"
+if [[ "$STATUS" == *'; charging;'* ]]; then
   ICON=""
+  COLOR="$COLOR_CHARGING"
+elif [[ "$STATUS" == *"'AC Power'"* ]]; then
+  ICON=""
+elif ((PERCENTAGE <= LOW_BATTERY_PERCENT)); then
+  COLOR="$COLOR_WARNING"
 fi
 
-# The item invoking this script (name $NAME) will get its icon and label
-# updated with the current battery status
-sketchybar --set "$NAME" icon="$ICON" label="${PERCENTAGE}%"
+sketchybar --set "$NAME" drawing=on icon="$ICON" icon.color="$COLOR" label="${PERCENTAGE}%"

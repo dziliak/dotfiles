@@ -1,16 +1,13 @@
-# This is a demo config to showcase some of the most important commands.
-# It is meant to be changed and configured, as it is intentionally kept sparse.
-# For a (much) more advanced configuration example see my dotfiles:
-# https://github.com/FelixKratz/dotfiles
+#!/bin/bash
+# AeroSpace workspaces and system status. Managed with chezmoi; see README.md.
 
+CONFIG_DIR="${CONFIG_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}"
+export CONFIG_DIR
 PLUGIN_DIR="$CONFIG_DIR/plugins"
+source "$CONFIG_DIR/settings.sh"
 
 ##### Bar Appearance #####
-# Configuring the general appearance of the bar.
-# These are only some of the options available. For all options see:
 # https://felixkratz.github.io/SketchyBar/config/bar
-# If you are looking for other colors, see the color picker:
-# https://felixkratz.github.io/SketchyBar/config/tricks#color-picker
 
 bar=(
   position=top
@@ -19,25 +16,23 @@ bar=(
   margin=5
   corner_radius=10
   y_offset=2
-  color=0x40000000
-  border_color=0xff000000
+  color="$COLOR_BAR"
+  border_color="$COLOR_DARK"
   border_width=2
 )
 
 sketchybar --bar "${bar[@]}"
 
 ##### Changing Defaults #####
-# We now change some default values, which are applied to all further items.
-# For a full list of all available item properties see:
 # https://felixkratz.github.io/SketchyBar/config/items
 
 default=(
   padding_left=5
   padding_right=5
-  icon.font="JetBrainsMono NFM:Regular:20.0"
-  label.font="JetBrainsMono NFM:Regular:15.0"
-  icon.color=0xffffffff
-  label.color=0xffffffff
+  icon.font="$FONT_ICON"
+  label.font="$FONT_LABEL"
+  icon.color="$COLOR_TEXT"
+  label.color="$COLOR_TEXT"
   icon.padding_left=4
   icon.padding_right=4
   icon.y_offset=0
@@ -47,13 +42,13 @@ default=(
 )
 sketchybar --default "${default[@]}"
 
-##### That special apple icon
+##### Spotlight shortcut #####
 
 sketchybar --add item apple left \
   --set apple \
     padding_left=-7 \
     icon=  \
-    icon.font="JetBrainsMono NFM:Regular:22.0" \
+    icon.font="$FONT_FAMILY:Regular:22.0" \
     label.drawing=off \
     icon.y_offset=1 \
     click_script="osascript -e 'tell application \"System Events\" to keystroke \" \" using {command down}'"
@@ -62,14 +57,14 @@ sketchybar --add item apple left \
 
 sketchybar --add event aerospace_workspace_change
 
-for ws in 1 2 3 4 5 6 7 8 9 0; do
+for ws in "${WORKSPACES[@]}"; do
   sketchybar --add item "workspace.$ws" left \
     --set "workspace.$ws" \
       icon="$ws" \
       icon.drawing=on \
       icon.padding_left=7 \
       icon.padding_right=7 \
-      icon.font="JetBrainsMono NFM:Regular:15.0" \
+      icon.font="$FONT_LABEL" \
       icon.y_offset=0 \
       label.drawing=off \
       drawing=on \
@@ -82,28 +77,22 @@ done
 sketchybar --add item aerospace_watcher left \
   --set aerospace_watcher \
     drawing=off \
+    updates=on \
+    update_freq="$WORKSPACE_INTERVAL" \
     script="$PLUGIN_DIR/aerospace_workspace.sh" \
-  --subscribe aerospace_watcher aerospace_workspace_change
+  --subscribe aerospace_watcher aerospace_workspace_change space_windows_change system_woke display_change
 
 ##### Adding Left Items #####
-# We add some regular items to the left side of the bar, where
-# only the properties deviating from the current defaults need to be set
 
 sketchybar --add item chevron left \
            --set chevron icon= label.drawing=off \
            --add item front_app left \
-           --set front_app icon.drawing=off script="$PLUGIN_DIR/front_app.sh" \
+           --set front_app icon.drawing=off label.max_chars=24 script="$PLUGIN_DIR/front_app.sh" \
            --subscribe front_app front_app_switched
 
 ##### Adding Right Items #####
-# In the same way as the left items we can add items to the right side.
-# Additional position (e.g. center) are available, see:
-# https://felixkratz.github.io/SketchyBar/config/items#adding-items-to-sketchybar
-
-# Some items refresh on a fixed cycle, e.g. the clock runs its script once
-# every 10s. Other items respond to events they subscribe to, e.g. the
-# volume.sh script is only executed once an actual change in system audio
-# volume is registered. More info about the event system can be found here:
+# The clock includes seconds. CPU/network sample every three seconds by default.
+# Volume and workspaces use events plus a slow fallback for missed notifications.
 # https://felixkratz.github.io/SketchyBar/config/events
 
 ##### Calendar Dropdown #####
@@ -120,10 +109,11 @@ sketchybar --add item calendar right \
     popup.height=26 \
     popup.y_offset=8 \
     popup.background.drawing=on \
-    popup.background.color=0xcc1e1e2e \
+    popup.background.color="$COLOR_POPUP" \
     popup.background.corner_radius=10 \
     popup.background.border_width=1 \
-    popup.background.border_color=0xffffffff
+    popup.background.border_color="$COLOR_TEXT" \
+  --subscribe calendar system_woke
 
 ##### Calendar Popup Rows #####
 
@@ -133,8 +123,8 @@ sketchybar --add item calendar.month popup.calendar \
     icon.drawing=off \
     label="$(date '+%B %Y')" \
     label.align=center \
-    label.font="JetBrainsMono NFM:Bold:14.0" \
-    width=165 \
+    label.font="$FONT_TITLE" \
+    width=180 \
     background.drawing=off
 
 # Weekday header + up to 6 weeks
@@ -142,9 +132,9 @@ for i in 0 1 2 3 4 5 6; do
   sketchybar --add item calendar.row.$i popup.calendar \
     --set calendar.row.$i \
       icon.drawing=off \
-      label.font="JetBrainsMono NFM:Regular:13.0" \
+      label.font="$FONT_SMALL" \
       label.align=center \
-      width=165 \
+      width=180 \
       background.drawing=off
 done
 
@@ -152,43 +142,50 @@ sketchybar --add item clock right \
   --set clock \
     update_freq=1 \
     icon= \
-    script="$PLUGIN_DIR/clock.sh"
+    label.width=76 \
+    label.align=right \
+    script="$PLUGIN_DIR/clock.sh" \
+  --subscribe clock system_woke
 
 sketchybar --add item volume right \
   --set volume \
     drawing=on \
     icon.drawing=on \
     label.drawing=on \
-    script="$PLUGIN_DIR/volume_event.sh" \
-  --subscribe volume volume_change mouse.scrolled
-
-sketchybar --trigger volume_change
+    label.width=40 \
+    label.align=right \
+    update_freq="$VOLUME_INTERVAL" \
+    script="$PLUGIN_DIR/volume.sh" \
+  --subscribe volume volume_change mouse.scrolled system_woke
 
 sketchybar --add item battery right \
   --set battery \
     update_freq=120 \
+    label.width=40 \
+    label.align=right \
     script="$PLUGIN_DIR/battery.sh" \
   --subscribe battery system_woke power_source_change
 
 sketchybar --add item cpu right \
   --set cpu \
-    update_freq=2 \
+    update_freq="$CPU_INTERVAL" \
     icon= \
-    script="$PLUGIN_DIR/cpu.sh"
+    label.width=40 \
+    label.align=right \
+    script="$PLUGIN_DIR/cpu.sh" \
+  --subscribe cpu system_woke
 
 sketchybar --add item network right \
   --set network \
-    width=320 \
     icon.width=20 \
-    icon.align=left \
-    icon.font="JetBrainsMono NFM:Regular:15.0" \
-    label.width=300 \
+    icon.align=center \
+    icon.font="$FONT_LABEL" \
+    label.width=230 \
     label.align=right \
-    background.drawing=on \
-    background.width=320 \
-    update_freq=1 \
-    icon=Network\ Speed:  \
-    script="$PLUGIN_DIR/network.sh"
+    update_freq="$NETWORK_INTERVAL" \
+    icon=󰛳 \
+    script="$PLUGIN_DIR/network.sh" \
+  --subscribe network system_woke
 
 ##### Force all scripts to run the first time (never do this in a script) #####
 sketchybar --update

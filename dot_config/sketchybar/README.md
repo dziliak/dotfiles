@@ -1,7 +1,7 @@
 # SketchyBar
 
 Shell-based SketchyBar configuration with AeroSpace workspaces, calendar,
-clock, volume scrolling, battery, CPU utilization, and network throughput.
+clock, volume scrolling, battery, CPU utilization, memory, and network throughput.
 
 ## Configuration
 
@@ -15,7 +15,7 @@ clock, volume scrolling, battery, CPU utilization, and network throughput.
 Requires SketchyBar, AeroSpace, JetBrainsMono Nerd Font Mono, `jq`, and Xcode
 or the Xcode Command Line Tools. Other commands ship with macOS.
 
-CPU and network sample every three seconds by default; the clock keeps seconds.
+CPU, memory, and network sample every three seconds by default; the clock keeps seconds.
 The first CPU sample after startup/wake is `…` until a second sample is available.
 CPU indicator click actions:
 - Click: open a new Kitty terminal window running `htop`.
@@ -24,6 +24,14 @@ CPU indicator click actions:
 - Command-click: open Activity Monitor (also takes priority with Shift held).
 
 Terminal actions require Kitty and `htop` installed at `/opt/homebrew/bin/htop`.
+
+Memory displays used / total RAM as `16.809 / 24.000 GB`. Values use binary
+gigabytes (GiB, labeled GB to match installed RAM capacity), with three decimals.
+Used RAM is anonymous + wired + physical compressor memory, minus purgeable
+memory; reclaimable file-backed cache is excluded. The memory icon reflects
+macOS memory pressure: green for normal, yellow for warning, red for critical,
+and gray when unavailable. Hover to see swap used and the pressure status;
+click to open Activity Monitor. Set `MEMORY_INTERVAL` to change the refresh rate.
 
 Network rates use binary units (KiB/s, MiB/s, GiB/s) and track the default-route
 interface, including VPN interfaces. Reconnects, changed interfaces, counter

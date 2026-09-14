@@ -91,7 +91,7 @@ sketchybar --add item chevron left \
            --subscribe front_app front_app_switched
 
 ##### Adding Right Items #####
-# The clock includes seconds. CPU/network sample every three seconds by default.
+# The clock includes seconds. CPU/memory/network sample every three seconds by default.
 # Volume and workspaces use events plus a slow fallback for missed notifications.
 # https://felixkratz.github.io/SketchyBar/config/events
 
@@ -175,6 +175,35 @@ sketchybar --add item cpu right \
     script="$PLUGIN_DIR/cpu.sh" \
     click_script="$PLUGIN_DIR/cpu.sh click" \
   --subscribe cpu system_woke
+
+sketchybar --add item memory right \
+  --set memory \
+    update_freq="$MEMORY_INTERVAL" \
+    icon= \
+    label.width=180 \
+    label.align=right \
+    script="$PLUGIN_DIR/memory.sh" \
+    click_script="open -a 'Activity Monitor'" \
+    popup.drawing=off \
+    popup.align=right \
+    popup.height=26 \
+    popup.y_offset=8 \
+    popup.background.drawing=on \
+    popup.background.color="$COLOR_POPUP" \
+    popup.background.corner_radius=10 \
+    popup.background.border_width=1 \
+    popup.background.border_color="$COLOR_TEXT" \
+  --subscribe memory system_woke mouse.entered mouse.exited mouse.exited.global
+
+for row in swap pressure; do
+  sketchybar --add item "memory.$row" popup.memory \
+    --set "memory.$row" \
+      icon.drawing=off \
+      label.font="$FONT_SMALL" \
+      label.align=left \
+      width=220 \
+      background.drawing=off
+done
 
 sketchybar --add item network right \
   --set network \

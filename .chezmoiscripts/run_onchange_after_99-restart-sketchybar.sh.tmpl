@@ -1,0 +1,13 @@
+{{- if eq .chezmoi.os "darwin" }}
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Track file names and contents recursively, including additions and removals.
+{{- range glob (joinPath .chezmoi.sourceDir "dot_config/sketchybar/**") }}
+{{- if and (not (stat .).isDir) (ne (base .) ".DS_Store") }}
+# {{ trimPrefix $.chezmoi.sourceDir . }}: {{ include . | sha256sum }}
+{{- end }}
+{{- end }}
+
+brew services restart sketchybar
+{{- end }}

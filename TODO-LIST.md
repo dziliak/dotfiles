@@ -1,0 +1,22 @@
+# TODO-LIST
+
+- [ ] Create installer scripts for specific groupings of programs
+  - [ ] MacOS
+  - [ ] Linux
+  - [ ] Windows
+- [ ] Update the chezmoi config so it can be edited to select which programs get installed and configs created.
+- [ ] Add a Windows config setup
+- [ ] Add a script to breakout ~/Documents sub-folders in the ~/ folder
+  - [ ] Python
+  - [ ] Python Venv
+  - [ ] Python Git
+  - [ ] References
+  - [ ] Swift
+  - [ ] Lua
+  - [ ] References
+  - [ ] Projects
+  - [ ] Julia
+- [ ] Add opencode config
+- [ ] Add reload / restart script if aerospace changes
+- [ ] Add reload / restart script if hammerspoon changes
+- [ ] Add reload / restart script if karabiner changes

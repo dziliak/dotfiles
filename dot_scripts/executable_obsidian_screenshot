@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+VAULT_DIR="${HOME}/Documents/Obsidian/obsidian_vault"
+ATTACHMENTS_DIR="${VAULT_DIR}/attachments"
+DAILY_NOTES_DIR="${VAULT_DIR}/Dailies"
+
+notify() {
+  /usr/bin/osascript -e "display notification \"${1//\"/\\\"}\" with title \"Obsidian Screenshot\""
+}
+
+main() {
+  local timestamp
+  local date
+  local filename
+  local image_path
+  local daily_note
+  local obsidian_link
+
+  timestamp="$(date '+%Y-%m-%d_%H-%M-%S')"
+  date="$(date '+%Y-%m-%d')"
+
+  filename="Screenshot_${timestamp}.png"
+  image_path="${ATTACHMENTS_DIR}/${filename}"
+  daily_note="${DAILY_NOTES_DIR}/${date}.md"
+
+  mkdir -p "$ATTACHMENTS_DIR"
+
+  # Interactive region capture.
+  /usr/sbin/screencapture -i "$image_path"
+
+  # screencapture creates no file if Escape is pressed.
+  if [[ ! -f "$image_path" ]]; then
+    exit 0
+  fi
+
+  if [[ ! -f "$daily_note" ]]; then
+    notify "Daily note not found: ${date}.md"
+    rm -f "$image_path"
+    exit 1
+  fi
+
+  obsidian_link="![[../attachments/${filename}]]"
+
+  printf '\n%s\n' "$obsidian_link" >>"$daily_note"
+
+  notify "Screenshot added to daily note."
+}
+
+main "$@"

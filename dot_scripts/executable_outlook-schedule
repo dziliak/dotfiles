@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+uv run ~/Python/Obsidian/ical2obsidian.py

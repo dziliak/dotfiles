@@ -34,8 +34,9 @@ and gray when unavailable. Hover to see swap used and the pressure status;
 click to open Activity Monitor. Set `MEMORY_INTERVAL` to change the refresh rate.
 
 Network rates use binary units (KiB/s, MiB/s, GiB/s) and track the default-route
-interface, including VPN interfaces. Reconnects, changed interfaces, counter
-resets, and long sampling gaps establish a new baseline.
+interface, including VPN interfaces. Download and upload use fixed-width,
+right-aligned columns so their `/s` suffixes stay in place. Reconnects, changed
+interfaces, counter resets, and long sampling gaps establish a new baseline.
 
 Runtime state and the compiled CPU helper live in
 `${XDG_CACHE_HOME:-$HOME/Library/Caches}/sketchybar`, outside the managed config.
@@ -47,7 +48,15 @@ fallback covers missed events, such as background window closures. Failed
 AeroSpace queries preserve the last good display. When changing workspace names,
 also update `~/.config/aerospace/aerospace.toml` (persistent names and bindings).
 
-The calendar grid refreshes when opened, on a date change, and at bar reload.
+After the chevrons, the bar lists apps with windows on the focused AeroSpace
+workspace, alphabetically and separated by `|`. Each app appears once, with the
+focused window's app in bold. The list follows the same workspace/window events
+and fallback interval as the workspace indicators, plus application switches.
+
+The calendar popup has `<` and `>` buttons beside the month and year to browse
+previous and next months. Routine updates preserve the selected month; reopening
+the popup or reloading the bar returns to the current month. The grid also
+refreshes on a date change.
 Volume handles initialization, scrolling, and mute state in one script, with
 a 30-second fallback for missed notifications. Battery icons distinguish active
 charging, external power without charging, and discharge; low battery is red.

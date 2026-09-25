@@ -2,17 +2,21 @@
 set -euo pipefail
 
 PROJECT_DIR="${HOME}/Documents/Python/macos-ocr-tool"
+OBSIDIAN_SCREENSHOT_SCRIPT="${HOME}/.scripts/obsidian_screenshot"
 
 notify() {
   /usr/bin/osascript -e "display notification \"${1//\"/\\\"}\" with title \"OCR\""
 }
 
-have_choose() { command -v choose >/dev/null 2>&1; }
+have_choose() {
+  command -v choose >/dev/null 2>&1
+}
 
 pick_action() {
   local options=(
     "Screenshot window → clipboard"
     "Screenshot snip → clipboard"
+    "Screenshot snip → daily note"
     "OCR clipboard image → text"
     "OCR clipping (snip → OCR → text on clipboard)"
     "Cancel"
@@ -22,8 +26,9 @@ pick_action() {
     printf "%s\n" "${options[@]}" | choose
   else
     /usr/bin/osascript <<'OSA'
-      set options to {"Screenshot window → clipboard", "Screenshot snip → clipboard", "OCR clipboard image → text", "OCR clipping (snip → OCR → text on clipboard)", "Cancel"}
+      set options to {"Screenshot window → clipboard", "Screenshot snip → clipboard", "Screenshot snip → daily note", "OCR clipboard image → text", "OCR clipping (snip → OCR → text on clipboard)", "Cancel"}
       set choice to choose from list options with title "OCR Menu" with prompt "Choose an action:"
+
       if choice is false then
         return "Cancel"
       else
@@ -43,8 +48,19 @@ do_snip() {
   notify "Screenshot snip copied to clipboard."
 }
 
+do_obsidian_screenshot() {
+  if [[ ! -x "$OBSIDIAN_SCREENSHOT_SCRIPT" ]]; then
+    notify "Obsidian screenshot script not found or not executable."
+    printf 'Error: %s is missing or not executable.\n' "$OBSIDIAN_SCREENSHOT_SCRIPT" >&2
+    exit 1
+  fi
+
+  "$OBSIDIAN_SCREENSHOT_SCRIPT"
+}
+
 do_ocr_clipboard() {
   local out
+
   if out="$(cd "$PROJECT_DIR" && uv run python ocr_clipboard.py)"; then
     notify "OCR complete. Text copied to clipboard."
     printf "%s\n" "$out"
@@ -61,14 +77,33 @@ do_ocr_clipping() {
 
 main() {
   local choice
+
   choice="$(pick_action || true)"
 
   case "$choice" in
-  "Screenshot window → clipboard") do_window ;;
-  "Screenshot snip → clipboard") do_snip ;;
-  "OCR clipboard image → text") do_ocr_clipboard ;;
-  "OCR clipping (snip → OCR → text on clipboard)") do_ocr_clipping ;;
-  *) exit 0 ;;
+  "Screenshot window → clipboard")
+    do_window
+    ;;
+
+  "Screenshot snip → clipboard")
+    do_snip
+    ;;
+
+  "Screenshot snip → daily note")
+    do_obsidian_screenshot
+    ;;
+
+  "OCR clipboard image → text")
+    do_ocr_clipboard
+    ;;
+
+  "OCR clipping (snip → OCR → text on clipboard)")
+    do_ocr_clipping
+    ;;
+
+  *)
+    exit 0
+    ;;
   esac
 }
 

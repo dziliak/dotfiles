@@ -85,10 +85,11 @@ sketchybar --add item aerospace_watcher left \
 ##### Adding Left Items #####
 
 sketchybar --add item chevron left \
-           --set chevron icon= label.drawing=off \
+           --set chevron icon= label.drawing=off drawing=off \
            --add item front_app left \
-           --set front_app icon.drawing=off label.max_chars=24 script="$PLUGIN_DIR/front_app.sh" \
-           --subscribe front_app front_app_switched
+           --set front_app drawing=off updates=on \
+             update_freq="$WORKSPACE_INTERVAL" script="$PLUGIN_DIR/front_app.sh" \
+           --subscribe front_app front_app_switched aerospace_workspace_change space_windows_change system_woke display_change
 
 ##### Adding Right Items #####
 # The clock includes seconds. CPU/memory/network sample every three seconds by default.
@@ -105,6 +106,7 @@ sketchybar --add item calendar right \
     script="$PLUGIN_DIR/calendar.sh" \
     click_script="$PLUGIN_DIR/calendar.sh toggle" \
     popup.drawing=off \
+    popup.horizontal=on \
     popup.align=right \
     popup.height=26 \
     popup.y_offset=8 \
@@ -117,24 +119,67 @@ sketchybar --add item calendar right \
 
 ##### Calendar Popup Rows #####
 
-# Month title
+# Horizontal navigation header; the month hosts the grid directly below it.
+sketchybar --add item calendar.previous popup.calendar \
+  --set calendar.previous \
+    icon.drawing=off \
+    label="<" \
+    label.font="$FONT_TITLE" \
+    label.align=center \
+    label.width=24 \
+    label.padding_left=0 \
+    label.padding_right=0 \
+    width=24 \
+    padding_right=0 \
+    click_script="$PLUGIN_DIR/calendar.sh previous" \
+    background.drawing=off
+
 sketchybar --add item calendar.month popup.calendar \
   --set calendar.month \
     icon.drawing=off \
     label="$(date '+%B %Y')" \
     label.align=center \
     label.font="$FONT_TITLE" \
-    width=180 \
+    label.width=160 \
+    label.padding_left=0 \
+    label.padding_right=0 \
+    width=160 \
+    padding_left=0 \
+    padding_right=0 \
+    popup.drawing=off \
+    popup.align=center \
+    popup.height=26 \
+    popup.background.drawing=on \
+    popup.background.color="$COLOR_POPUP" \
+    popup.background.corner_radius=10 \
+    popup.background.border_width=1 \
+    popup.background.border_color="$COLOR_TEXT" \
+    background.drawing=off
+
+sketchybar --add item calendar.next popup.calendar \
+  --set calendar.next \
+    icon.drawing=off \
+    label=">" \
+    label.font="$FONT_TITLE" \
+    label.align=center \
+    label.width=24 \
+    label.padding_left=0 \
+    label.padding_right=0 \
+    width=24 \
+    padding_left=0 \
+    click_script="$PLUGIN_DIR/calendar.sh next" \
     background.drawing=off
 
 # Weekday header + up to 6 weeks
 for i in 0 1 2 3 4 5 6; do
-  sketchybar --add item calendar.row.$i popup.calendar \
+  sketchybar --add item calendar.row.$i popup.calendar.month \
     --set calendar.row.$i \
       icon.drawing=off \
       label.font="$FONT_SMALL" \
-      label.align=center \
-      width=180 \
+      label.align=left \
+      label.padding_left=24 \
+      label.padding_right=0 \
+      width=208 \
       background.drawing=off
 done
 

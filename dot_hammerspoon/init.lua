@@ -33,12 +33,20 @@ hs.hotkey.bind(hyper, "W", function()
 	end
 end)
 
+hs.hotkey.bind({ "cmd", "alt" }, "a", function()
+	hs.task.new("/Users/dziliak/.scripts/ocr_menu", nil):start()
+end)
+
 hs.hotkey.bind({ "cmd", "alt" }, "b", function()
 	hs.task.new("/Users/dziliak/.scripts/screensnip", nil):start()
 end)
 
 hs.hotkey.bind({ "cmd", "alt" }, "g", function()
 	hs.task.new("/Users/dziliak/.scripts/ocr_snippet", nil):start()
+end)
+
+hs.hotkey.bind({ "cmd", "alt" }, "v", function()
+	hs.task.new("/Users/dziliak/.scripts/obsidian_screenshot", nil):start()
 end)
 
 local targetVolumePath = "/Volumes/Work_Backup"

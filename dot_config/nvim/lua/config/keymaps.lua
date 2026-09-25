@@ -17,6 +17,36 @@ vim.keymap.set("n", "-", ":Oil<CR>", opts)
 -- vim.keymap.set("n", "<space>r", ":.lua<CR>")
 -- vim.keymap.set("v", "<space>r", ":lua<CR>")
 
+-- TaskNotes
+local function taskmap(key, command, description)
+  vim.keymap.set("n", "<leader>t" .. key, "<cmd>" .. command .. "<CR>", {
+    noremap = true,
+    silent = true,
+    desc = "TaskNotes: " .. description,
+  })
+end
+
+taskmap("n", "TaskNew", "New task")
+taskmap("l", "TaskList", "List tasks")
+taskmap("t", "TaskToday", "Today's tasks")
+taskmap("o", "TaskOverdue", "Overdue tasks")
+taskmap("d", "TaskDue", "Tasks by due date")
+taskmap("s", "TaskSearch", "Search tasks")
+taskmap("c", "TaskComplete", "Complete task")
+taskmap("u", "TaskStatus", "Update status")
+taskmap("p", "TaskPriority", "Set priority")
+taskmap("a", "TaskArchive", "Archive task")
+
+-- TaskNotes timers
+taskmap("ms", "TaskTimerStart", "Start timer")
+taskmap("mx", "TaskTimerStop", "Stop timer")
+taskmap("mi", "TaskTimerStatus", "Timer status")
+taskmap("ml", "TaskTimerLog", "Timer log")
+
+taskmap("g", "TaskStats", "Statistics")
+taskmap("D", "TaskDoctor", "Diagnostics")
+
+-- Obsidian
 vim.keymap.set({ "n", "x", "o" }, "s", "<Plug>(leap)")
 vim.keymap.set("n", "S", "<Plug>(leap-from-window)")
 

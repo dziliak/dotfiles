@@ -58,6 +58,7 @@ LABEL="$(awk -v down="$DOWN" -v up="$UP" '
     if (bytes >= 1024) return sprintf("%.0fKiB/s", bytes / 1024)
     return sprintf("%.0fB/s", bytes)
   }
-  BEGIN { printf "↓%s ↑%s", fmt(down), fmt(up) }
+  # Fixed-width fields keep both /s suffixes stationary in the monospace label.
+  BEGIN { printf "↓%11s ↑%11s", fmt(down), fmt(up) }
 ')"
 sketchybar --set "$NAME" label="$LABEL"

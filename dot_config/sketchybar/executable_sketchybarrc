@@ -193,14 +193,6 @@ sketchybar --add item clock right \
   --subscribe clock system_woke
 
 sketchybar --add item volume right \
-  update_freq=1 \
-  icon= \
-  label.width=76 \
-  label.align=right \
-  script="$PLUGIN_DIR/clock.sh" \
-  --subscribe clock system_woke
-
-sketchybar --add item volume right \
   --set volume \
   drawing=on \
   icon.drawing=on \

@@ -49,6 +49,10 @@ hs.hotkey.bind({ "cmd", "alt" }, "v", function()
 	hs.task.new("/Users/dziliak/.scripts/obsidian_screenshot", nil):start()
 end)
 
+local screenshot = require("screensnippet_to_file")
+
+hs.hotkey.bind({ "cmd", "alt" }, "f", screenshot.snippet)
+
 local targetVolumePath = "/Volumes/Work_Backup"
 local scriptToRun = os.getenv("HOME") .. "/.scripts/on-nvme-mounted.sh"
 

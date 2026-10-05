@@ -236,7 +236,7 @@ sketchybar --add item battery right \
   mouse.exited.global
 
 # Battery popup rows
-for row in power energy charge to80 to100 current health cycles source; do
+for row in power energy charge runtime to80 to100 current health cycles source; do
   sketchybar --add item "battery.$row" popup.battery \
     --set "battery.$row" \
     icon.font="$FONT_SMALL" \
@@ -256,6 +256,7 @@ done
 sketchybar --set battery.power icon="Power" label="--"
 sketchybar --set battery.energy icon="Energy" label="--"
 sketchybar --set battery.charge icon="Charge" label="--"
+sketchybar --set battery.runtime icon="Runtime" label="--"
 sketchybar --set battery.to80 icon="To 80%" label="--"
 sketchybar --set battery.to100 icon="To 100%" label="--"
 sketchybar --set battery.current icon="Current" label="--"

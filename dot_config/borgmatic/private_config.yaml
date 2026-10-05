@@ -19,6 +19,7 @@ source_directories:
     - /Users/dziliak/.zsh_history
     - /Users/dziliak/.gitconfig
     - /Users/dziliak/Library/Application Support/Firefox/
+    - /Users/dziliak/Library/LaunchAgents/
     - /Users/dziliak/Swift
     - /Users/dziliak/Desktop/
     - /Users/dziliak/Downloads/

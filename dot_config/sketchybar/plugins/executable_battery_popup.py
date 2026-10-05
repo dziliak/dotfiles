@@ -173,6 +173,7 @@ def main():
                 "power": "--",
                 "energy": "--",
                 "charge": "--",
+                "runtime": "--",
                 "to80": "--",
                 "to100": "--",
                 "current": "--",
@@ -339,6 +340,41 @@ def main():
 
     else:
         energy_text = "--"
+
+    #
+    # Estimated runtime at current discharge rate
+    #
+    # remaining mAh / discharge mA = hours remaining
+    #
+    # This intentionally uses the current battery draw, so the estimate
+    # responds quickly to changes in CPU/GPU workload.
+    #
+
+    runtime_minutes = None
+
+    if (
+        not external
+        and not charging
+        and remaining_mah is not None
+        and current_ma is not None
+        and current_ma < -50
+    ):
+        runtime_minutes = remaining_mah / abs(current_ma) * 60.0
+
+    if external:
+        runtime_text = "On AC"
+
+    elif charging:
+        runtime_text = "Charging"
+
+    elif runtime_minutes is not None:
+        runtime_text = format_minutes(
+            runtime_minutes,
+            approximate=True,
+        )
+
+    else:
+        runtime_text = "--"
 
     #
     # Current / voltage
@@ -523,6 +559,7 @@ def main():
             "power": power_text,
             "energy": energy_text,
             "charge": charge_text,
+            "runtime": runtime_text,
             "to80": to80_text,
             "to100": to100_text,
             "current": current_text,

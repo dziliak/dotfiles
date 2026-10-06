@@ -36,7 +36,7 @@ main() {
 
   if [[ ! -f "$daily_note" ]]; then
     notify "Daily note not found: ${date}.md"
-    rm -f "$image_path"
+    # rm -f "$image_path"
     exit 1
   fi
 

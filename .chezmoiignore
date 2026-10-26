@@ -1,6 +1,19 @@
 .DS_Store
 **/.DS_Store
 
+# Claude Code: account state, transcripts, memory, caches. Never sync.
+.claude.json
+.claude.json.backup*
+.claude/**
+!.claude/settings.json
+!.claude/CLAUDE.md
+!.claude/keybindings.json
+!.claude/skills
+!.claude/skills/**
+.claude/skills/synced/**
+!.claude/agents
+!.claude/agents/**
+
 {{- if ne .chezmoi.os "darwin" }}
 run_before_00-install-homebrew.sh
 run_after_99-brew-upgrade.sh.tmpl

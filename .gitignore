@@ -19,3 +19,15 @@ id_ed25519*
 
 # chezmoi private data, if you create any manually
 .private/
+
+# Claude Code (source-state names)
+*dot_claude.json*
+*dot_claude/**
+!*dot_claude/settings.json*
+!*dot_claude/CLAUDE.md*
+!*dot_claude/keybindings.json*
+!*dot_claude/skills/
+!*dot_claude/skills/**
+*dot_claude/skills/synced/**
+!*dot_claude/agents/
+!*dot_claude/agents/**

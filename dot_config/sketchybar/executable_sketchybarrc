@@ -19,6 +19,9 @@ bar=(
   color="$COLOR_BAR"
   border_color="$COLOR_DARK"
   border_width=2
+  # Above the menu bar level: since macOS 27.2 the auto-hidden menu bar keeps an
+  # invisible full-width window at that level, which otherwise swallows all mouse events.
+  topmost=on
 )
 
 sketchybar --bar "${bar[@]}"
@@ -202,6 +205,91 @@ sketchybar --add item volume right \
   update_freq="$VOLUME_INTERVAL" \
   script="$PLUGIN_DIR/volume.sh" \
   --subscribe volume volume_change mouse.scrolled system_woke
+
+##### Sony WH-1000XM4 #####
+# Battery in the bar while the headset is connected; click opens the settings popup and
+# scrolling changes the system volume. The volume item is hidden meanwhile.
+# Needs ~/.local/bin/xm4ctl (see github.com/dziliak/sketchy_sony_headphones) and XM4_MAC in settings.sh.
+
+sketchybar --add item headphones right \
+  --set headphones \
+  drawing=off \
+  icon="󰋋" \
+  label.width=48 \
+  label.align=right \
+  update_freq=30 \
+  script="$PLUGIN_DIR/headphones.sh" \
+  click_script="$PLUGIN_DIR/headphones.sh toggle" \
+  popup.drawing=off \
+  popup.align=right \
+  popup.height=26 \
+  popup.y_offset=8 \
+  popup.background.drawing=on \
+  popup.background.color="$COLOR_POPUP" \
+  popup.background.corner_radius=10 \
+  popup.background.border_width=1 \
+  popup.background.border_color="$COLOR_TEXT" \
+  --subscribe headphones system_woke mouse.scrolled volume_change
+
+# Popup rows: icon is the row label, label is the value (battery popup pattern).
+hp_row=(
+  icon.font="$FONT_SMALL" icon.width=110 icon.align=left icon.padding_left=12 icon.padding_right=8
+  label.font="$FONT_SMALL" label.width=170 label.align=right label.padding_left=0 label.padding_right=12
+  background.drawing=off
+)
+hp_slider=(
+  icon.font="$FONT_SMALL" icon.width=110 icon.align=left icon.padding_left=12 icon.padding_right=8
+  label.font="$FONT_SMALL" label.width=50 label.align=right label.padding_left=0 label.padding_right=12
+  slider.width=120 slider.percentage=0 slider.highlight_color="$COLOR_CHARGING"
+  slider.background.height=6 slider.background.corner_radius=3 slider.background.color="$COLOR_OCCUPIED"
+  slider.knob="●" slider.knob.drawing=on slider.knob.font="$FONT_SMALL"
+  background.drawing=off
+)
+
+for row in header sound mode ambient voice s2c dsee connection touch eq clearbass band.1 band.2 band.3 band.4 band.5 devices \
+           device.0 device.1 device.2 device.3 device.4 device.5 device.6 device.7; do
+  case "$row" in
+    ambient | clearbass | band.*)
+      sketchybar --add slider "headphones.$row" popup.headphones 120 --set "headphones.$row" "${hp_slider[@]}" label="--" ;;
+    *)
+      sketchybar --add item "headphones.$row" popup.headphones --set "headphones.$row" "${hp_row[@]}" label="--" ;;
+  esac
+done
+
+sketchybar --set headphones.header icon="WH-1000XM4" icon.font="$FONT_TITLE" \
+    updates=when_shown update_freq=60 script="$PLUGIN_DIR/headphones.sh refresh" \
+  --set headphones.sound icon="Sound" icon.font="$FONT_TITLE" label="" \
+  --set headphones.mode icon="Mode" click_script="$PLUGIN_DIR/headphones.sh mode" script="$PLUGIN_DIR/headphones.sh mode" \
+  --subscribe headphones.mode mouse.scrolled \
+  --set headphones.ambient icon="Ambient level" click_script="$PLUGIN_DIR/headphones.sh slider ambient" \
+  --set headphones.voice icon="Focus on voice" click_script="$PLUGIN_DIR/headphones.sh toggle-key voice" \
+  --set headphones.s2c icon="Speak-to-chat" click_script="$PLUGIN_DIR/headphones.sh toggle-key s2c" \
+  --set headphones.dsee icon="DSEE Extreme" click_script="$PLUGIN_DIR/headphones.sh toggle-key dsee" \
+  --set headphones.connection icon="Connection" click_script="$PLUGIN_DIR/headphones.sh toggle-key connection" \
+  --set headphones.touch icon="Touch panel" click_script="$PLUGIN_DIR/headphones.sh toggle-key touch" \
+  --set headphones.eq icon="Equalizer" icon.font="$FONT_TITLE" click_script="$PLUGIN_DIR/headphones.sh eq-menu" \
+    popup.drawing=off popup.align=right popup.height=26 \
+    popup.background.drawing=on popup.background.color="$COLOR_POPUP" popup.background.corner_radius=10 \
+    popup.background.border_width=1 popup.background.border_color="$COLOR_TEXT" \
+  --set headphones.clearbass icon="Clear Bass" click_script="$PLUGIN_DIR/headphones.sh slider clear-bass" \
+  --set headphones.band.1 icon="400 Hz" click_script="$PLUGIN_DIR/headphones.sh slider eq-band 1" \
+  --set headphones.band.2 icon="1 kHz" click_script="$PLUGIN_DIR/headphones.sh slider eq-band 2" \
+  --set headphones.band.3 icon="2.5 kHz" click_script="$PLUGIN_DIR/headphones.sh slider eq-band 3" \
+  --set headphones.band.4 icon="6.3 kHz" click_script="$PLUGIN_DIR/headphones.sh slider eq-band 4" \
+  --set headphones.band.5 icon="16 kHz" click_script="$PLUGIN_DIR/headphones.sh slider eq-band 5" \
+  --set headphones.devices icon="Devices" icon.font="$FONT_TITLE" label=""
+
+for i in 0 1 2 3 4 5 6 7; do
+  sketchybar --set "headphones.device.$i" drawing=off icon.width=200 label.width=80
+done
+
+# Equalizer preset list (nested popup); the plugin shows the ones the headset reports.
+for id in $(seq 0 29); do
+  sketchybar --add item "headphones.preset.$id" popup.headphones.eq \
+    --set "headphones.preset.$id" drawing=off icon.drawing=off \
+    label.font="$FONT_SMALL" label.align=left label.width=150 label.padding_left=12 label.padding_right=12 \
+    click_script="$PLUGIN_DIR/headphones.sh preset $id" background.drawing=off
+done
 
 ##### Battery #####
 

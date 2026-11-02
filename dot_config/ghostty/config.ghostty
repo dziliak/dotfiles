@@ -1,0 +1,55 @@
+# ── Ghostty ── riced to match starship (gruvbox_dark) + sketchybar/aerospace
+
+# Theme: follows macOS light/dark
+theme = dark:Gruvbox Dark,light:Gruvbox Light
+
+# Font
+font-family = "JetBrainsMono Nerd Font"
+font-size = 12
+font-thicken = true
+adjust-cell-height = 12%
+font-feature = calt
+font-feature = liga
+
+# Glass
+background-opacity = 0.80
+background-blur = 20
+unfocused-split-opacity = 0.8
+unfocused-split-fill = #1d2021
+
+# Window: chromeless, aerospace handles layout
+macos-titlebar-style = hidden
+macos-option-as-alt = left
+window-padding-x = 2
+window-padding-y = 2
+window-padding-balance = true
+window-padding-color = extend
+window-save-state = always
+confirm-close-surface = false
+resize-overlay = never
+
+# Cursor
+cursor-style = bar
+cursor-style-blink = false
+cursor-color = #fe8019
+shell-integration-features = no-cursor,sudo,title
+
+# Behaviour
+mouse-hide-while-typing = true
+copy-on-select = clipboard
+scrollback-limit = 25000000
+
+# Quake-style drop-down terminal from anywhere (needs Accessibility permission)
+keybind = global:cmd+grave_accent=toggle_quick_terminal
+quick-terminal-position = top
+quick-terminal-screen = mouse
+quick-terminal-animation-duration = 0.15
+
+# Splits
+keybind = cmd+d=new_split:right
+keybind = cmd+shift+d=new_split:down
+keybind = cmd+alt+h=goto_split:left
+keybind = cmd+alt+j=goto_split:bottom
+keybind = cmd+alt+k=goto_split:top
+keybind = cmd+alt+l=goto_split:right
+keybind = cmd+shift+enter=toggle_split_zoom

@@ -112,11 +112,12 @@ fi
 alias AllFilesTRUE='defaults write com.apple.finder AppleShowAllFiles TRUE; killall Finder'
 alias AllFilesFALSE='defaults write com.apple.finder AppleShowAllFiles FALSE; killall Finder'
 
-# Use eza not ls
-alias ls='eza --icons --group-directories-first --hyperlink'
-alias ll='eza -lh --icons --git --group-directories-first --hyperlink'
-alias la='eza -lah --icons --git --group-directories-first --hyperlink'
-alias lt='eza --tree --icons --git --group-directories-first --hyperlink '
+# Use eza not ls (blank LS_COLORS so oh-my-zsh's defaults don't override the eza theme)
+export EZA_CONFIG_DIR="$HOME/.config/eza"
+alias ls='LS_COLORS= eza --icons --group-directories-first --hyperlink'
+alias ll='LS_COLORS= eza -lh --icons --git --group-directories-first --hyperlink'
+alias la='LS_COLORS= eza -lah --icons --git --group-directories-first --hyperlink'
+alias lt='LS_COLORS= eza --tree --icons --git --group-directories-first --hyperlink '
 
 alias ff='fastfetch -c /Users/dziliak/.config/fastfetch/config.json'
 

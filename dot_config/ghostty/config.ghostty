@@ -1,7 +1,7 @@
-# ── Ghostty ── riced to match starship (gruvbox_dark) + sketchybar/aerospace
+# ── Ghostty ── riced to match starship (tokyo night) + sketchybar/aerospace
 
 # Theme: follows macOS light/dark
-theme = dark:Gruvbox Dark,light:Gruvbox Light
+theme = dark:TokyoNight,light:TokyoNight Day
 
 # Font
 font-family = "JetBrainsMono Nerd Font"
@@ -12,10 +12,11 @@ font-feature = calt
 font-feature = liga
 
 # Glass
+background = #000000
 background-opacity = 0.80
 background-blur = 20
 unfocused-split-opacity = 0.8
-unfocused-split-fill = #1d2021
+unfocused-split-fill = #1a1b26
 
 # Window: chromeless, aerospace handles layout
 macos-titlebar-style = hidden
@@ -31,8 +32,12 @@ resize-overlay = never
 # Cursor
 cursor-style = bar
 cursor-style-blink = false
-cursor-color = #fe8019
+cursor-color = #7aa2f7
 shell-integration-features = no-cursor,sudo,title
+
+# Cursor Animation https://github.com/sahaj-b/cursor-shaders
+custom-shader = shaders/Ghostty/cursor_warp.glsl
+custom-shader-animation = always
 
 # Behaviour
 mouse-hide-while-typing = true

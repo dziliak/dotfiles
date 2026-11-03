@@ -1,77 +1,193 @@
-tap "anomalyco/tap"
-tap "deskflow/tap"
-tap "felixkratz/formulae"
-tap "nikitabobko/tap"
-tap "ra3xdh/qucs-s"
+tap "anomalyco/tap", trusted: true
+tap "bahaaio/pomo", trusted: { casks: ["pomo"] }
+tap "deskflow/tap", trusted: true
+tap "dziliak/tap"
+tap "felixkratz/formulae", "https://github.com/FelixKratz/homebrew-formulae", trusted: true
+tap "nikitabobko/tap", trusted: true
+tap "ra3xdh/qucs-s", trusted: true
+# ARP scanning and fingerprinting tool
+brew "arp-scan"
+# Terminal bandwidth utilization tool
+brew "bandwhich"
+# Clone of cat(1) with syntax highlighting and Git integration
 brew "bat"
+# Deduplicating archiver with compression and authenticated encryption
 brew "borgbackup"
+# Simple wrapper script for the Borg backup software
 brew "borgmatic"
+# Resource monitor. C++ version and continuation of bashtop and bpytop
 brew "btop"
+# Manage your dotfiles across multiple diverse machines, securely
 brew "chezmoi"
+# Modern diagram scripting language that turns text to diagrams
+brew "d2"
+# Diff that understands syntax
 brew "difftastic"
+# Lightweight DNS forwarder and DHCP server
+brew "dnsmasq"
+# More intuitive version of du in rust
+brew "dust"
+# Select default apps for documents and URL schemes on macOS
 brew "duti"
+# Modern, maintained replacement for ls
 brew "eza"
+# Like neofetch, but much faster because written mostly in C
 brew "fastfetch"
+# Simple, fast and user-friendly alternative to find
 brew "fd"
+# Play, record, convert, and stream select audio and video codecs
 brew "ffmpeg"
+# Command-line fuzzy finder written in Go
 brew "fzf"
+# GitHub command-line tool
+brew "gh"
+# Syntax-highlighting pager for git and diff output
 brew "git-delta"
+# Audit git repos for secrets
 brew "gitleaks"
+# Library for USB device access
 brew "libusb"
+# Library for communicating with USB and Bluetooth HID devices
+brew "hidapi"
+# Improved top (interactive process viewer)
 brew "htop"
+# Portable abstraction of the hierarchical topology of modern architectures
+brew "hwloc"
+# Get events and tasks from the macOS calendar database
+brew "ical-buddy"
+# Tools and libraries to manipulate images in select formats
 brew "imagemagick"
+# Tools and libraries to manipulate images in many formats
 brew "imagemagick-full"
+# Update of iperf: measures TCP, UDP, and SCTP bandwidth
 brew "iperf3"
+# Lightweight and flexible command-line JSON processor
 brew "jq"
+# Fast, Dynamic Programming Language
+brew "julia"
+# Handy way to save and run project-specific commands
+brew "just"
+# Simple terminal UI for git commands
 brew "lazygit"
+# Asynchronous event library
+brew "libevent"
+# LLM inference in C/C++
 brew "llama.cpp"
+# Powerful, lightweight programming language
 brew "lua"
+# Just-In-Time Compiler (JIT) for the Lua programming language
 brew "luajit"
+# Incremental parsing library
 brew "tree-sitter"
+# Ambitious Vim-fork focused on extensibility and agility
 brew "neovim"
+# No Nonsense Neovim Client in Rust
 brew "neovide"
+# RSS/Atom feed reader for text terminals
 brew "newsboat"
+# Port scanning utility for large networks
+brew "nmap"
+# Open-source, cross-platform JavaScript runtime environment
 brew "node"
+# High performance message passing library
+brew "open-mpi"
+# Swiss-army knife of markup format conversion
 brew "pandoc"
+# Paste PNG into files
 brew "pngpaste"
+# PDF rendering library (based on the xpdf-3.0 code base)
 brew "poppler"
+# Framework for managing multi-language pre-commit hooks
 brew "pre-commit"
+# Simple, modern, secure file encryption
 brew "rage"
+# Rsync for cloud storage
 brew "rclone"
+# Search tool like grep and The Silver Searcher
 brew "ripgrep"
+# Cross-shell prompt for astronauts
 brew "starship"
+# Feature-rich console based todo list manager
 brew "task"
+# Shell wrapper for Taskwarrior commands
 brew "tasksh"
+# Terminal user interface for taskwarrior
 brew "taskwarrior-tui"
+# Send macOS User Notifications from the command-line
 brew "terminal-notifier"
+# Command-line time tracking application
 brew "timewarrior"
+# Parser generator tool
 brew "tree-sitter-cli"
+# Incremental parsing library
+brew "tree-sitter@0.25"
+# List detailed info about USB devices
+brew "usbutils"
+# Pretty print math in monospace fonts, using a TeX-like syntax
+brew "utftex"
+# Extremely fast Python package installer and resolver, written in Rust
 brew "uv"
-brew "anomalyco/tap/opencode"
+# OpenCode V2 - the AI coding agent for the terminal
+brew "anomalyco/tap/opencode-v2", trusted: true
+# Custom macOS statusbar with shell plugin, interaction and graph support
 brew "felixkratz/formulae/sketchybar"
+# AeroSpace is an i3-like tiling window manager for macOS
 cask "nikitabobko/tap/aerospace"
+# Memory training application
+cask "anki"
+# Compact TeX distribution as alternative to the full TeX Live / MacTeX
+cask "basictex"
+# Display management tool
 cask "betterdisplay"
+# Mouse and keyboard sharing utility
 cask "deskflow/tap/deskflow"
-cask "flameshot"
 cask "font-atkinson-hyperlegible-next"
 cask "font-atkynson-mono-nerd-font"
 cask "font-hack-nerd-font"
 cask "font-jetbrains-mono-nerd-font"
+# 3D parametric modeller
 cask "freecad"
+# Library for direct USB access to FTDI devices
+cask "dziliak/tap/ftdi-d2xx", trusted: true
+# Desktop automation application
 cask "hammerspoon"
+# Speech to text application
 cask "handy"
+# Vector graphics editor
 cask "inkscape"
+# Keyboard customiser
 cask "karabiner-elements"
+# Password manager app
 cask "keepassxc"
+# Find shortcuts for any installed application
+cask "keyclu"
+# Electronics design automation suite
 cask "kicad"
+# GPU-based terminal emulator
 cask "kitty"
+# Privacy-first, open-source platform for knowledge sharing and management
 cask "logseq"
+# SPICE simulation software, schematic capture and waveform viewer
 cask "ltspice"
+# File system integration
+cask "macfuse"
+# Neovim Client
 cask "neovide-app"
-cask "ra3xdh/qucs-s/qucs-s"
+# Simple Gtk# Paint Program
+cask "pinta"
+# G-code generator for 3D printers (RepRap, Makerbot, Ultimaker etc.)
+cask "prusaslicer"
+# Tool to reverse the direction of scrolling
 cask "scroll-reverser"
+# Multimedia player
 cask "vlc"
+uv "jupyterlab", with: ["jupyterlab-vim", "jupytext"]
+uv "jupytext"
 uv "markitdown[all]"
 uv "nbstripout"
 uv "pre-commit"
+uv "prologix-netfinder"
+uv "pylatexenc"
 uv "ruff"
+uv "termdown"
+npm "prettier"

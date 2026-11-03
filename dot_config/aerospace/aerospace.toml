@@ -90,7 +90,7 @@ on-window-detected = [
     # Built-in MacBook display uses smaller/no top gap to avoid doubled inset.
     outer.top = [
         { monitor."built-in" = 5 },
-        34
+        8
     ]
 
 

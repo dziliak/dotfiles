@@ -1,6 +1,10 @@
 .DS_Store
 **/.DS_Store
 
+# Ghostty shaders are a git clone; keep the files, not its .git
+.config/ghostty/shaders/.git
+.config/ghostty/shaders/.git/**
+
 # Claude Code: account state, transcripts, memory, caches. Never sync.
 .claude.json
 .claude.json.backup*

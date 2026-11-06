@@ -108,13 +108,22 @@ fi
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
+# Number of commands stored in memory
+HISTSIZE=100000
+
+# Number of commands saved to disk
+SAVEHIST=100000
+
+# History file location
+HISTFILE=~/.zsh_history
+
 # Aliases
 alias AllFilesTRUE='defaults write com.apple.finder AppleShowAllFiles TRUE; killall Finder'
 alias AllFilesFALSE='defaults write com.apple.finder AppleShowAllFiles FALSE; killall Finder'
 
 # Use eza not ls (blank LS_COLORS so oh-my-zsh's defaults don't override the eza theme)
 export EZA_CONFIG_DIR="$HOME/.config/eza"
-alias ls='LS_COLORS= eza --icons --group-directories-first --hyperlink'
+# alias ls='LS_COLORS= eza --icons --group-directories-first --hyperlink'
 alias ll='LS_COLORS= eza -lh --icons --git --group-directories-first --hyperlink'
 alias la='LS_COLORS= eza -lah --icons --git --group-directories-first --hyperlink'
 alias lt='LS_COLORS= eza --tree --icons --git --group-directories-first --hyperlink '
@@ -176,5 +185,8 @@ export PATH="$HOME/.config/emacs/bin:$PATH"
 export OPENCODE_PROVIDER=ollama
 export OPENCODE_BASE_URL=http://localhost:11434/v1
 
+# Set up fzf key bindings and fuzzy completion
+eval "$(fzf --zsh)"
 
+# Enable starship
 eval "$(starship init zsh)"

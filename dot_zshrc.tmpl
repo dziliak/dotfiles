@@ -188,5 +188,8 @@ export OPENCODE_BASE_URL=http://localhost:11434/v1
 # Set up fzf key bindings and fuzzy completion
 eval "$(fzf --zsh)"
 
+# Enable carapace
+source <(carapace _carapace)
+
 # Enable starship
 eval "$(starship init zsh)"
